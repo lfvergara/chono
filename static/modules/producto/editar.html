@@ -1,0 +1,363 @@
+<!--DATA TABLE-->
+<link href="{url_static}vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="{url_static}vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+<!--DATA TABLE-->
+<div class="col-lg-12">
+    <ul class="breadcrumb">
+        <li><a href="{url_app}/reporte/{panel_general}"><i class="fa fa-home"></i> HOME</a></li>
+        <li><a href="{url_app}/{objeto}/listar">Listar Productos</a></li>
+    </ul>
+</div>
+<div class="col-md-8 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><i class="fa fa-plus-square"></i>&nbsp;&nbsp; Editar producto</h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class=" form">
+                <form class="form" id="formulario_guardar" method="post" action="{url_app}/producto/actualizar">
+                    <div class="form-group col-lg-4">
+                        <label>Código</label>
+                        <input type="text" class="form-control" id="codigo" name="codigo" value="{producto-codigo}" required>
+                    </div>
+                    <div class="form-group col-lg-8">
+                        <label>Descripción</label>
+                        <input type="text" class="form-control" id="denominacion" name="denominacion" value="{producto-denominacion}" required>
+                    </div>
+                    <div class="form-group col-lg-4">
+                        <label>Marca</label>
+                        <select class="form-control m-bot15" name="productomarca" id="productomarca" required>
+                            <option value="{productomarca-productomarca_id}">{productomarca-denominacion}</option>
+                            {slt_productomarca}
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-4">
+                        <label>Rubro</label>
+                        <select class="form-control m-bot15" name="productocategoria" id="productocategoria" required>
+                            <option value="{productocategoria-productocategoria_id}">{productocategoria-denominacion}</option>
+                            {slt_productocategoria}
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-4">
+                        <label>Unidad Venta</label>
+                        <select class="form-control m-bot15" name="productounidad" id="productounidad" required>
+                            <option value="{productounidad-productounidad_id}">{productounidad-denominacion}</option>
+                            {slt_productounidad}
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-4">
+                        <label>Stock Mínimo</label>
+                        <input type="number" class="form-control" id="stock_minimo" name="stock_minimo" value="{producto-stock_minimo}" required>
+                    </div>
+                    <div class="form-group col-lg-4">
+                        <label>Stock Ideal</label>
+                        <input type="number" class="form-control" id="stock_ideal" name="stock_ideal" value="{producto-stock_ideal}" required>
+                    </div>
+                    <div class="form-group col-lg-4">
+                        <label>Días Reintegro</label>
+                        <input type="number" class="form-control" id="dias_reintegro" name="dias_reintegro" value="{producto-dias_reintegro}" required>
+                    </div>
+                    <div class="form-group col-lg-3">
+                        <label>Unidad por Bulto</label>
+                        <input type="number" class="form-control" id="unidad_bulto" name="unidad_bulto" value="{producto-unidad_bulto}" required>
+                    </div>
+                    <div class="form-group col-lg-3">
+                        <label>Pisos por Pallet</label>
+                        <input type="number" class="form-control" id="pisos_pallet" name="pisos_pallet" value="{producto-pisos_pallet}" required>
+                    </div>
+                    <div class="form-group col-lg-3">
+                        <label>Bultos por Pallet</label>
+                        <input type="number" class="form-control" id="bulto_pallet" name="bulto_pallet" value="{producto-bulto_pallet}" required>
+                    </div>
+                    <div class="form-group col-lg-3">
+                        <label>Ubicación</label>
+                        <input type="text" class="form-control" id="ubicacion" name="ubicacion" value="{producto-ubicacion}" required>
+                    </div>
+                     <div class="form-group col-lg-3">
+                        <label>Flete (%)</label>
+                        <input type="number" class="form-control" id="flete" name="flete" value="{producto-flete}" step="0.001" onchange="calculaPrecioVenta();" required>
+                    </div>
+                    <div class="form-group col-lg-3">
+                        <label>IVA</label>
+                        <select class="form-control m-bot15" name="iva" id="iva" required>
+                            <option value="{producto-iva}" selected>{producto-iva}%</option>
+                            <option value="27">27%</option>
+                            <option value="21">21%</option>
+                            <option value="10.5">10.5%</option>
+                            <option value="5">5%</option>
+                            <option value="2.5">2.5%</option>
+                            <option value="0">0%</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-3">
+                        <label>Exento?</label>
+                        <select class="form-control m-bot15" name="exento" id="exento" required>
+                            <option value="{producto-exento}" selected>{producto-txt_exento}</option>
+                            <option value="0">NO</option>
+                            <option value="1">SI</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-3">
+                        <label>No gravado?</label>
+                        <select class="form-control m-bot15" name="no_gravado" id="no_gravado" required>
+                            <option value="{producto-no_gravado}" selected>{producto-txt_no_gravado}</option>
+                            <option value="0">NO</option>
+                            <option value="1">SI</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-4">
+                        <label>Precio Costo</label>
+                        <input type="number" class="form-control" id="costo" name="costo" value="{producto-costo}" step="0.001" onchange="calculaPrecioVenta();" required>
+                    </div>
+                    <div class="form-group col-lg-4">
+                        <label>Ganancia (%)</label>
+                        <input type="number" class="form-control" id="porcentaje_ganancia" name="porcentaje_ganancia" value="{producto-porcentaje_ganancia}" step="0.001" onchange="calculaPrecioVenta();" required>
+                    </div>
+                    <div class="form-group col-lg-4">
+                        <label>Precio Venta</label>
+                        <input type="number" class="form-control" id="precio_venta" name="precio_venta" step="0.001" value="{producto-precio_venta}" onchange="calculaGanancia();" required>
+                    </div>
+                    <!--
+                    <div class="form-group col-lg-12">
+                        <label>BarCode</label>
+                        <input type="text" class="form-control" id="barcode" name="barcode" value="{producto-barcode}" required>
+                    </div>
+                    -->
+                    <div class="form-group col-lg-12">
+                        <label>Detalle</label>
+                        <textarea class="form-control" id="detalle" name="detalle" rows="3">{producto-detalle}</textarea>
+                    </div>
+                    <div class="form-group col-lg-12" style="margin-top: 2%;" align="right">
+                        <input type="hidden" id="barcode" name="barcode" value="{producto-barcode}" required>
+                        <input type="hidden" id="peso" name="peso" value="{producto-peso}" required>
+                        <input type="hidden" name="producto_id" value="{producto-producto_id}">
+                        <a href="#" class="btn btn-app" onclick="verificarProducto();"> <i class="fa fa-edit"></i> Editar </a>
+                    </div>
+                </form>
+            </div>            
+        </div>
+    </div>
+</div>
+<div class="col-md-4 col-sm-12 col-xs-12" id="div_proveedor_producto">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><i class="fa fa-table"></i>&nbsp;&nbsp; Proveedores del producto</h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <table id="tbl_proveedor" class="table table-striped table-bordered">
+                <thead>
+                    <tr style="font-size: 12px;">
+                        <th>Proveedor</th>
+                        <!--<th></th>-->
+                    </tr>
+                </thead>
+                <tbody>
+                    {tbl_proveedorproducto}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--<a href="#" class="btn btn-success" onClick="agregarProveedor();" style="float: right; margin-right: 0px;"> 
+        <i class="fa fa-plus-circle"></i> Agregar Proveedor del Producto
+    </a>-->
+</div>
+<div class="col-md-4 col-sm-12 col-xs-12" id="div_proveedor" style="display: none;">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><i class="fa fa-plus-square"></i>&nbsp;&nbsp; Agregar proveedor de producto</h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class=" form">
+                <form class="form" id="formulario_guardar" method="post" action="{url_app}/producto/asociar_proveedor">
+                    <table id="tbl_proveedor_producto" class="table table-striped table-bordered">
+                        <thead>
+                            <tr style="font-size: 12px;">
+                                <th>Proveedor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {tbl_proveedor}
+                        </tbody>
+                    </table>
+                    <div class="form-group col-lg-12" style="margin-top: 2%;" align="right">
+                        <input type="hidden" name="fecha" value="{fecha_sys}" required>
+                        <input type="hidden" name="precio_costo" value="{producto-costo}" required>
+                        <input type="hidden" name="producto_id" value="{producto-producto_id}">
+                        <button class="btn btn-app" type="submit"> <i class="fa fa-save"></i> Agregar </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="btn btn-danger" onClick="cancelarAgregar();" style="float: right; margin-right: 0px;"> Cancelar </a>
+</div>
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="sistema_alertas">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="myModalLabel">ATENCIÓN! Sistema de Alertas!</h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12">
+                    <div class="col-lg-2">
+                        <center><h1><i class="fa fa-exclamation-triangle" style="color: #ff6c60;"></i></h1></center>
+                    </div>
+                    <div class="col-lg-10"><h5 id="msj_alerta_modal"></h5></div>
+                </div>
+                <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Datatables -->
+<script src="{url_static}vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="{url_static}vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="{url_static}vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="{url_static}vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+        $('#tbl_proveedor_producto').dataTable( {
+            "aaSorting": [[ 0, "asc" ]]
+          , "iDisplayLength":10
+        } );
+
+        $('#tbl_proveedor').dataTable( {
+            "aaSorting": [[ 0, "asc" ]]
+          , "iDisplayLength":10
+        } );
+    } );
+
+    function calculaPrecioVenta() {
+        var costo = document.getElementById('costo').value;
+        var flete = document.getElementById('flete').value;
+        var porcentaje_ganancia = document.getElementById('porcentaje_ganancia').value;
+        var slt_iva = document.getElementById("iva");
+        var iva = slt_iva.options[slt_iva.selectedIndex].value;
+
+        if (costo == 0) {
+            document.getElementById('precio_venta').value = 0;
+        } else {
+            var monto_flete = (flete * costo) / 100;
+            var costo_mas_flete = parseFloat(costo) + parseFloat(monto_flete);
+
+            var monto_iva = (iva * costo_mas_flete) / 100;
+            var costo_iva = parseFloat(costo_mas_flete) + parseFloat(monto_iva);
+
+            var monto_ganancia = (porcentaje_ganancia * costo_iva) / 100;
+            var valor_venta = parseFloat(costo_iva) + parseFloat(monto_ganancia);
+            document.getElementById('precio_venta').value = valor_venta.toFixed(2);
+
+            calculaGanancia();
+        }
+    }
+
+    function calculaGanancia() {
+        var costo = document.getElementById('costo').value;
+        var flete = document.getElementById('flete').value;
+        var slt_iva = document.getElementById("iva");
+        var iva = slt_iva.options[slt_iva.selectedIndex].value;
+        var precio_venta = document.getElementById('precio_venta').value;
+
+        if (costo == 0) {
+            document.getElementById('precio_venta').value = 0;
+            document.getElementById('porcentaje_ganancia').value = 0;
+        } else {
+            
+                var monto_flete = (flete * costo) / 100;
+                var costo_mas_flete = parseFloat(costo) + parseFloat(monto_flete);
+
+                var monto_iva = (iva * costo_mas_flete) / 100;
+                var costo_iva = parseFloat(costo_mas_flete) + parseFloat(monto_iva);
+
+                var ganancia = parseFloat(precio_venta) / parseFloat(costo_iva);
+                var porcentaje_ganancia = (parseFloat(ganancia) - 1) * 100;
+            
+
+            document.getElementById('porcentaje_ganancia').value = porcentaje_ganancia.toFixed(2);
+        }
+    }
+
+    function agregarProveedor() {
+        document.getElementById('div_proveedor_producto').style.display = 'none';
+        document.getElementById('div_proveedor').style.display = 'block';
+    }
+
+    function cancelarAgregar() {
+        document.getElementById('div_proveedor_producto').style.display = 'block';
+        document.getElementById('div_proveedor').style.display = 'none';
+    }
+
+    function verificarProducto() {
+        var array = new Array();
+        var flag_array = 0;
+
+        var denominacion = document.getElementById("denominacion").value;
+        if (denominacion == null || denominacion.length == 0 || denominacion == "") {
+            flag_array = 1;
+            array.push("<strong>[ERROR]</strong> Por favor complete la DENOMINACIÓN del producto.");
+        }
+
+        var productomarca = document.getElementById("productomarca");
+        var productomarca_id = productomarca.options[productomarca.selectedIndex].value;
+        if (productomarca_id == null || productomarca_id.length == 0 || productomarca_id == "" || productomarca_id == 0) {
+            flag_array = 1;
+            array.push("<strong>[ERROR]</strong> Por favor seleccione la MARCA DEL PRODUCTO.");
+        }
+
+        var productocategoria = document.getElementById("productocategoria");
+        var productocategoria_id = productocategoria.options[productocategoria.selectedIndex].value;
+        if (productocategoria_id == null || productocategoria_id.length == 0 || productocategoria_id == "" || productocategoria_id == 0) {
+            flag_array = 1;
+            array.push("<strong>[ERROR]</strong> Por favor seleccione la CATEGORÍA DEL PRODUCTO.");
+        }
+
+        var productounidad = document.getElementById("productounidad");
+        var productounidad_id = productounidad.options[productounidad.selectedIndex].value;
+        if (productounidad_id == null || productounidad_id.length == 0 || productounidad_id == "" || productounidad_id == 0) {
+            flag_array = 1;
+            array.push("<strong>[ERROR]</strong> Por favor seleccione la UNIDAD DEL PRODUCTO.");
+        }
+
+        if (flag_array == 0) {
+            /*
+            var flag = $.ajax({
+                url: '{url_app}/producto/verifica_existencia_codigo/' + codigo,
+                    dataType: 'text',
+                    async: false
+            }).responseText;
+            console.log(flag);
+            if (flag > 0) {
+                $('#sistema_alertas').modal('show');
+                document.getElementById("msj_alerta_modal").innerHTML = "<strong>[ERROR]</strong> El CÓDIGO del producto ya se encuentra cargado en el sistema.";
+            } else {
+                document.getElementById("formulario_guardar").submit();
+            }
+            */
+            
+            document.getElementById("formulario_guardar").submit();
+        } else {
+            var mensaje = array.join("<br><br>");
+            $('#sistema_alertas').modal('show');
+            document.getElementById("msj_alerta_modal").innerHTML = mensaje;
+        }
+    }
+</script>
