@@ -93,7 +93,7 @@ class ExcelReport extends View {
         foreach ($this->abecedario as $clave=>$valor) {
           if ($clave <= $cantidadColumnas) $objPHPExcel->getActiveSheet()->getStyle("{$valor}3")->applyFromArray($this->estilo_titulo_columnas);
         }
-
+        print_r($objPHPExcel);exit;
         //$objPHPExcel->getActiveSheet()->setSharedStyle($this->estilo_informacion, "{$celdas_informacion}");
         $objPHPExcel->getActiveSheet()->setTitle("infDHTordo");
         $objPHPExcel->setActiveSheetIndex(0);
