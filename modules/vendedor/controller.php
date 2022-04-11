@@ -708,6 +708,7 @@ class VendedorController {
 		$localidad = filter_input(INPUT_POST, 'localidad');
 		$provincia = filter_input(INPUT_POST, 'provincia');
 		$documentotipo = filter_input(INPUT_POST, 'documentotipo');
+		$codigopostal = filter_input(INPUT_POST, 'codigopostal');
 		
 		$this->model->apellido = (is_null($apellido) OR empty($apellido)) ? '-' : $apellido;
 		$this->model->nombre = (is_null($nombre) OR empty($nombre)) ? '-' : $nombre;
