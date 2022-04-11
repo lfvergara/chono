@@ -117,6 +117,8 @@ class ProductoController {
 				break;
 		}
 
+		print_r($producto_collection);exit;
+
 		$subtitulo = "LISTA DE PRECIO";
 		$array_encabezados = array('COD', 'RUBRO', 'MARCA', 'PRODUCTO', 'PRECIO UNITARIO');
 		$array_exportacion = array();
