@@ -8,7 +8,7 @@
         <li><a href="{url_app}/{objeto}/listar">Listar Productos</a></li>
     </ul>
 </div>
-<div class="col-md-12 col-sm-12 col-xs-12">
+<div class="col-md-9 col-sm-12 col-xs-12">
     <div class="x_panel">
         <div class="x_title">
             <h2><i class="fa fa-table"></i>&nbsp;&nbsp; Listado de productos</h2>
@@ -24,7 +24,6 @@
                     <tr style="font-size: 12px;">
                         <th>COD</th>
                         <th>Rubro</th>
-                        <th>Familia</th>
                         <th>Descripción</th>
                         <th class="remover-info">Costo</th>
                         <th class="remover-info">+IVA</th>
@@ -37,6 +36,62 @@
                     {tbl_producto}
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+<div class="col-md-3 col-sm-12 col-xs-12 hidden-print">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Lista por Proveedor</h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <form class="form" id="descargar_listaprecio_proveedor" method="post" action="{url_app}/producto/descargar_lista_precio">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label>Proveedor</label>
+                        <select class="form-control m-bot15" name="proveedor" id="proveedor" required>
+                            <option value="all" selected>TODOS</option>
+                            {slt_proveedor}
+                        </select>
+                    </div>
+                    <input type="hidden" name="filtro" value="1">
+                    <button type="button" class="btn btn-primary" style="width: 100%; font-size: 14px;" onClick="proveedorListaPrecio();">
+                        <i class="fa fa-download"></i> DESCARGAR LISTA
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Lista por Marca</h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <form class="form" id="descargar_listaprecio_proveedor" method="post" action="{url_app}/producto/descargar_lista_precio">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label>Marca</label>
+                        <select class="form-control m-bot15" name="productomarca" id="productomarca" required>
+                            <option value="all" selected>TODAS</option>
+                            {slt_productomarca}
+                        </select>
+                    </div>
+                    <input type="hidden" name="filtro" value="2">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 14px;" onClick="marcaListaPrecio();">
+                        <i class="fa fa-download"></i> DESCARGAR LISTA
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
