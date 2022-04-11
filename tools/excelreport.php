@@ -105,8 +105,8 @@ class ExcelReport extends View {
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         file_put_contents('depuracion.txt', ob_get_contents());
         ob_end_clean();
-        $objWriter->save('php://output');
         print_r($objPHPExcel);exit;
+        $objWriter->save('php://output');
     }
 
     function extraer_informe_conjunto_remanente($subtitulo, $array_exportacion, $array_exportacion2) {
