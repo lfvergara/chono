@@ -93,7 +93,6 @@ class ExcelReport extends View {
         foreach ($this->abecedario as $clave=>$valor) {
           if ($clave <= $cantidadColumnas) $objPHPExcel->getActiveSheet()->getStyle("{$valor}3")->applyFromArray($this->estilo_titulo_columnas);
         }
-        print_r($objPHPExcel);exit;
         //$objPHPExcel->getActiveSheet()->setSharedStyle($this->estilo_informacion, "{$celdas_informacion}");
         $objPHPExcel->getActiveSheet()->setTitle("infDHTordo");
         $objPHPExcel->setActiveSheetIndex(0);
@@ -104,6 +103,7 @@ class ExcelReport extends View {
         header('Cache-Control: max-age=0');
 
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        print_r($objPHPExcel);exit;
         file_put_contents('depuracion.txt', ob_get_contents());
         ob_end_clean();
         $objWriter->save('php://output');
