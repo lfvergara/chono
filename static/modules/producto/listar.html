@@ -125,4 +125,44 @@
           , "iDisplayLength":15
         } );
     } );
+
+    function proveedorListaPrecio() {
+        var array = new Array();
+        var flag_array = 0;
+
+        var proveedor = document.getElementById("proveedor");
+        var proveedor_id = proveedor.options[proveedor.selectedIndex].value;
+        if (proveedor_id == null || proveedor_id.length == 0 || proveedor_id == "" || proveedor_id == 0) {
+            flag_array = 1;
+            array.push("<strong>[ERROR]</strong> Por favor seleccione un PROVEEDOR.");
+        } 
+
+        if (flag_array == 0) {
+            document.getElementById("descargar_listaprecio_proveedor").submit();
+        } else {
+            var mensaje = array.join("<br><br>");
+            $('#sistema_alertas').modal('show');
+            document.getElementById("msj_alerta_modal").innerHTML = mensaje;
+        }
+    }
+
+    function marcaListaPrecio() {
+        var array = new Array();
+        var flag_array = 0;
+
+        var productomarca = document.getElementById("productomarca");
+        var productomarca_id = productomarca.options[productomarca.selectedIndex].value;
+        if (productomarca_id == null || productomarca_id.length == 0 || productomarca_id == "" || productomarca_id == 0) {
+            flag_array = 1;
+            array.push("<strong>[ERROR]</strong> Por favor seleccione una MARCA.");
+        } 
+
+        if (flag_array == 0) {
+            document.getElementById("descargar_listaprecio_marca").submit();
+        } else {
+            var mensaje = array.join("<br><br>");
+            $('#sistema_alertas').modal('show');
+            document.getElementById("msj_alerta_modal").innerHTML = mensaje;
+        }
+    }
 </script>
