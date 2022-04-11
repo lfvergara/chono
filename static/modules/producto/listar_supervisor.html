@@ -23,11 +23,13 @@
                 <thead>
                     <tr style="font-size: 12px;">
                         <th>COD</th>
-                        <th>Ubicación</th>
                         <th>Rubro</th>
+                        <th>Familia</th>
                         <th>Descripción</th>
-                        <th>$Costo</th>
-                        <th>$Venta</th>
+                        <th class="remover-info">Costo</th>
+                        <th class="remover-info">+IVA</th>
+                        <th class="remover-info">+Flete</th>
+                        <th>Venta <font class="remover-info">(Ganancia)</font></th>
                         <th></th>
                     </tr>
                 </thead>
@@ -44,6 +46,13 @@
 <script src="{url_static}vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
 <script src="{url_static}vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
 <script type="text/javascript" charset="utf-8">
+    var user_level = {display-user_level};
+    $( window ).on( "load", function() {
+        if (user_level < 3) {
+            $(".remover-info").css("display","none");    
+        }
+    });
+    
     $(document).ready(function() {
         $('#tbl_producto').dataTable( {
             "aaSorting": [[ 0, "asc" ]]
