@@ -32,6 +32,7 @@ class ClienteController {
 		$from = "cliente c INNER JOIN provincia pr ON c.provincia = pr.provincia_id INNER JOIN condicionfiscal cf ON c.condicionfiscal = cf.condicionfiscal_id INNER JOIN condicioniva ci ON c.condicioniva = ci.condicioniva_id INNER JOIN documentotipo dt ON c.documentotipo = dt.documentotipo_id INNER JOIN vendedor v ON c.vendedor = v.vendedor_id INNER JOIN frecuenciaventa fv ON c.frecuenciaventa = fv.frecuenciaventa_id INNER JOIN flete fl ON fl.flete_id = c.flete";
 		$where = "c.oculto = 0";
 		$cliente_collection = CollectorCondition()->get('Cliente', $where, 4, $from, $select);
+		print_r($cliente_collection);exit;
 		$this->view->listar($cliente_collection);
 	}
 
