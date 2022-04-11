@@ -106,7 +106,6 @@ class ExcelReport extends View {
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         file_put_contents('depuracion.txt', ob_get_contents());
         ob_end_clean();
-        print_r($objPHPExcel);exit;
         $objWriter->save('php://output');
     }
 
