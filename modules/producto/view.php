@@ -40,6 +40,8 @@ class ProductoView extends View {
 		$proveedor_collection = $this->order_collection_objects($proveedor_collection, 'razon_social', SORT_ASC);
 
 		$tbl_producto_array = $this->render_regex_dict('TBL_PRODUCTO', $tbl_producto_array, $producto_collection);
+		$gui_slt_productomarca = $this->render_regex('SLT_PRODUCTOMARCA', $gui_slt_productomarca, $productomarca_collection);
+		$gui_slt_proveedor = $this->render_regex('SLT_PROVEEDOR', $gui_slt_proveedor, $proveedor_collection);
 		$render = str_replace('{tbl_producto}', $tbl_producto_array, $gui);
 		$render = str_replace('{slt_proveedor}', $gui_slt_proveedor, $render);
 		$render = str_replace('{slt_productomarca}', $gui_slt_productomarca, $render);
