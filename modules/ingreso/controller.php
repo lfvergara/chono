@@ -278,7 +278,8 @@ class IngresoController {
 		$from = "ingresodetalle id INNER JOIN producto p ON id.producto_id = p.producto_id";
 		$where = "id.ingreso_id = {$ingreso_id}";
 		$ingresodetalle_collection = CollectorCondition()->get('IngresoDetalle', $where, 4, $from, $select);
-		
+		/*
+		//STOCK
 		foreach ($ingresodetalle_collection as $ingreso) {
 			$temp_producto_id = $ingreso['PRODUCTO_ID'];
 			$select = "MAX(s.stock_id) AS STOCK_ID";
@@ -317,6 +318,7 @@ class IngresoController {
 				$sm->save();
 			}
 		}
+		*/
 		
 		header("Location: " . URL_APP . "/ingreso/listar/1");
 	}
