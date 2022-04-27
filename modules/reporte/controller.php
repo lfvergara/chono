@@ -3305,7 +3305,7 @@ class ReporteController {
 								, $valor->producto->productomarca->denominacion
 								, $valor->producto->denominacion
 								, $valor->cantidad_actual
-								, $valor->producto->precio_venta);
+								, "$" . $valor->producto->precio_venta);
 			$array_exportacion[] = $array_temp;
 
 		}
