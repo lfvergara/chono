@@ -3151,54 +3151,53 @@ class ReporteController {
 		$array_exportacion = array();
 		switch ($tipo_busqueda) {
 		    case 1:
-						if (!empty($_POST['producto_id'])) {
-							$producto_id = $_POST['producto_id'];
-							$producto_id = implode(',', $producto_id);
+				if (!empty($_POST['producto_id'])) {
+					$producto_id = $_POST['producto_id'];
+					$producto_id = implode(',', $producto_id);
 
- 							$tipo_where = "pd.producto_id IN ({$producto_id})";
-							$tipo_groupby = "";
+						$tipo_where = "pd.producto_id IN ({$producto_id})";
+					$tipo_groupby = "";
 
-							$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Productos";
-							$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA');
-						}
+					$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Productos";
+					$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA');
+				}
 		        break;
 		    case 2:
-						if (!empty($_POST['marca_id'])) {
-							$marca_id = $_POST['marca_id'];
-							$marca_id = implode(',', $marca_id);
+				if (!empty($_POST['marca_id'])) {
+					$marca_id = $_POST['marca_id'];
+					$marca_id = implode(',', $marca_id);
 
-							$tipo_where = "pro.productomarca IN ({$marca_id})";
-							$tipo_groupby = ",pro.productomarca";
+					$tipo_where = "pro.productomarca IN ({$marca_id})";
+					$tipo_groupby = ",pro.productomarca";
 
-							$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Marcas";
-							$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA', 'MARCA');
-
-						}
+					$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Marcas";
+					$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA', 'MARCA');
+				}
 		        break;
 		    case 3:
-						if (!empty($_POST['proveedor_id'])) {
-							$proveedor_id = $_POST['proveedor_id'];
-							$proveedor_id = implode(',', $proveedor_id);
+				if (!empty($_POST['proveedor_id'])) {
+					$proveedor_id = $_POST['proveedor_id'];
+					$proveedor_id = implode(',', $proveedor_id);
 
-							$tipo_where = "pd.proveedor_id IN ({$proveedor_id})";
-							$tipo_groupby = ",pd.proveedor_id";
+					$tipo_where = "pd.proveedor_id IN ({$proveedor_id})";
+					$tipo_groupby = ",pd.proveedor_id";
 
-							$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Proveedores";
-							$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA', 'PROVEEDOR');
- 						}
+					$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Proveedores";
+					$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA', 'PROVEEDOR');
+				}
 		        break;
-				case 4:
-						if (!empty($_POST['vendedor_id'])) {
-							$vendedor_id = $_POST['vendedor_id'];
-							$vendedor_id = implode(',', $vendedor_id);
+			case 4:
+				if (!empty($_POST['vendedor_id'])) {
+					$vendedor_id = $_POST['vendedor_id'];
+					$vendedor_id = implode(',', $vendedor_id);
 
-							$tipo_where = "e.vendedor IN ({$vendedor_id})";
-							$tipo_groupby = ",e.vendedor";
+					$tipo_where = "e.vendedor IN ({$vendedor_id})";
+					$tipo_groupby = ",e.vendedor";
 
-							$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Vendedores";
-							$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA', 'VENDEDOR');
-						}
-		        break;
+					$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Vendedores";
+					$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA', 'VENDEDOR');
+				}
+	        	break;
 		}
 
 		$select = "ed.codigo_producto AS CODIGO,ed.descripcion_producto AS PRODUCTO,ed.cantidad AS CANTIDAD,cl.razon_social AS CLIENTE,
@@ -3216,26 +3215,25 @@ class ReporteController {
 		foreach ($egresos_collection as $clave=>$valor) {
 			switch ($tipo_busqueda) {
 			    case 1:
-							$campo = "";
+					$campo = "";
 			        break;
 			    case 2:
-							$campo = $valor["MARCA"];
+					$campo = $valor["MARCA"];
 			        break;
 			    case 3:
-							$campo = $valor["PROVEEDOR"];
+					$campo = $valor["PROVEEDOR"];
 			        break;
-					case 4:
-					  	$campo = $valor["VENDEDOR"];
+				case 4:
+				  	$campo = $valor["VENDEDOR"];
 			        break;
 			}
 
-			$array_temp = array(
-							$valor["CODIGO"]
-						, $valor["PRODUCTO"]
-						, $valor["CANTIDAD"]
-						, $valor["CLIENTE"]
-						, $valor["NOMBRE_FANTASIA"]
-						, $campo);
+			$array_temp = array($valor["CODIGO"]
+								, $valor["PRODUCTO"]
+								, $valor["CANTIDAD"]
+								, $valor["CLIENTE"]
+								, $valor["NOMBRE_FANTASIA"]
+								, $campo);
 			$array_exportacion[] = $array_temp;
 		}
 
@@ -3243,7 +3241,59 @@ class ReporteController {
 		$array_exportacion[] = array('', '', '', '');
 		ExcelReport()->extraer_informe_conjunto($subtitulo, $array_exportacion);
 		exit;
+	}
 
+	function  descargar_stock() {
+		SessionHandler()->check_session();
+		require_once "tools/excelreport.php";
+
+		$almacen_id = filter_input(INPUT_POST, $almacen_id);
+		$select = "s.producto_id AS PROD_ID";
+		$from = "stock s";
+		$where = "s.almacen_id = {$almacen_id}";
+		$groupby = "s.producto_id";
+		$productoid_collection = CollectorCondition()->get('Stock', $where, 4, $from, $select, $groupby);
+		$stock_valorizado = 0;
+		if ($productoid_collection == 0 || empty($productoid_collection) || !is_array($productoid_collection)) {
+			$stock_collection = array();
+		} else {
+			$producto_ids = array();
+			foreach ($productoid_collection as $producto_id) $producto_ids[] = $producto_id['PROD_ID'];
+			$producto_ids = implode(',', $producto_ids);
+
+			$select = "MAX(s.stock_id) AS STOCK_ID";
+			$from = "stock s";
+			$where = "s.producto_id IN ({$producto_ids}) AND s.almacen_id = {$almacen_id}";
+			$groupby = "s.producto_id";
+			$stockid_collection = CollectorCondition()->get('Stock', $where, 4, $from, $select, $groupby);
+
+			$stock_collection = array();
+			foreach ($stockid_collection as $stock_id) {
+				$this->model = new Stock();
+				$this->model->stock_id = $stock_id['STOCK_ID'];
+				$this->model->get();
+
+				$pm = new Producto();
+				$pm->producto_id = $this->model->producto_id;
+				$pm->get();
+
+				if ($pm->oculto == 0) {
+					$costo_iva = (($pm->costo * $pm->iva) / 100) + $pm->costo;
+					$valor_stock_producto = round(($costo_iva * $this->model->cantidad_actual),2);
+					$stock_valorizado = $stock_valorizado + $valor_stock_producto;
+					
+					$class_stm = ($this->model->cantidad_actual < $pm->stock_minimo) ? 'danger' : 'success';
+					$this->model->producto = $pm;
+					$this->model->valor_stock = number_format($valor_stock_producto, 2, ',', '.');
+					$this->model->class_stm = $class_stm;
+					$this->model->mensaje_stm = $mensaje_stm;
+					unset($this->model->producto_id);
+					$stock_collection[] = $this->model;
+				}
+			}
+		}
+
+		print_r($stock_collection);exit;
 	}
 }
 ?>
