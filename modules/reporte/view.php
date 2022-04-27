@@ -278,7 +278,7 @@ class ReporteView extends View {
 		$tbl_sum_importe_producto = file_get_contents("static/modules/reporte/tbl_sum_importe_producto.html");
 		$tbl_sum_cantidad_producto = file_get_contents("static/modules/reporte/tbl_sum_cantidad_producto.html");
 		
-		$slt_almacen = $this->render_regex_dict('SLT_ALMACEN', $slt_almacen, $almacen_collection);
+		$slt_almacen = $this->render_regex('SLT_ALMACEN', $slt_almacen, $almacen_collection);
 		$tbl_producto = $this->render_regex_dict('TBL_PRODUCTO', $tbl_producto, $producto_collection);
 		$tbl_productomarca = $this->render_regex('TBL_PRODUCTOMARCA', $tbl_productomarca, $productomarca_collection);
 		$slt_productomarca = $this->render_regex('SLT_PRODUCTOMARCA', $slt_productomarca, $productomarca_collection);
