@@ -3250,8 +3250,7 @@ class ReporteController {
 		require_once "tools/excelreport.php";
 
 		$fecha = date('Y-m-d');
-		//$almacen_id = filter_input(INPUT_POST, $almacen_id);
-		$almacen_id = 1;
+		$almacen_id = filter_input(INPUT_POST, 'almacen');
 		$select = "s.producto_id AS PROD_ID";
 		$from = "stock s";
 		$where = "s.almacen_id = {$almacen_id}";
@@ -3312,8 +3311,6 @@ class ReporteController {
 
 		ExcelReport()->extraer_informe_conjunto($subtitulo, $array_exportacion);
 		exit;
-
-		print_r($stock_collection);exit;
 	}
 }
 ?>
