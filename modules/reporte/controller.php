@@ -3247,7 +3247,8 @@ class ReporteController {
 		SessionHandler()->check_session();
 		require_once "tools/excelreport.php";
 
-		$almacen_id = filter_input(INPUT_POST, $almacen_id);
+		//$almacen_id = filter_input(INPUT_POST, $almacen_id);
+		$almacen_id = 1;
 		$select = "s.producto_id AS PROD_ID";
 		$from = "stock s";
 		$where = "s.almacen_id = {$almacen_id}";
