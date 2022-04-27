@@ -17,6 +17,7 @@ require_once "modules/notacreditodetalle/model.php";
 require_once "modules/proveedor/model.php";
 require_once "modules/vendedor/model.php";
 require_once "modules/cajadiaria/model.php";
+require_once "modules/almacen/model.php";
 
 
 class ReporteController {

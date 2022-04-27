@@ -270,10 +270,10 @@ class ReporteView extends View {
 		$tbl_productomarcas = file_get_contents("static/modules/reporte/tbl_productomarcas.html");
 		$tbl_vendedor = file_get_contents("static/modules/reporte/tbl_vendedor.html");
 
+		$slt_almacen = file_get_contents("static/common/slt_almacen.html");
 		$tbl_producto = file_get_contents("static/modules/reporte/tbl_producto_array.html");
 		$tbl_productomarca = file_get_contents("static/modules/reporte/tbl_productomarca.html");
 		$slt_productomarca = file_get_contents("static/common/slt_productomarca.html");
-		$slt_almacen = file_get_contents("static/common/slt_almacen.html");
 		$tbl_productomarca_grafico = file_get_contents("static/modules/reporte/tbl_productomarcagrafico.html");
 		$tbl_sum_importe_producto = file_get_contents("static/modules/reporte/tbl_sum_importe_producto.html");
 		$tbl_sum_cantidad_producto = file_get_contents("static/modules/reporte/tbl_sum_cantidad_producto.html");
@@ -338,6 +338,7 @@ class ReporteView extends View {
 		$render = str_replace('{tbl_vendedor}', $tbl_vendedor, $render);
 		$render = str_replace('{tbl_proveedor}', $tbl_proveedor, $render);
 		$render = str_replace('{slt_vendedor}', $gui_slt_vendedor, $render);
+		$render = str_replace('{slt_almacen}', $slt_almacen, $render);
 		$render = str_replace('{tbl_productos}', $tbl_productos, $render);
 		$render = str_replace('{tbl_productomarcas}', $tbl_productomarcas, $render);
 		$render = $this->render_breadcrumb($render);
