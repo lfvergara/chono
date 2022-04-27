@@ -2007,7 +2007,9 @@ class ReporteController {
 		$where = "cl.oculto = 0 ORDER BY c.razon_social ASC";
 		$clientes_collection = CollectorCondition()->get('Cliente', $where, 4, $from, $select);
 
-		$this->view->reportes($sum_importe_producto, $sum_cantidad_producto, $vendedor_collection, $producto_collection, $gastocategoria_collection, $productomarca_collection, $proveedor_collection,$user_level,$clientes_collection);
+		$almacen_collection = Collector()->get('Almacen');
+
+		$this->view->reportes($sum_importe_producto, $sum_cantidad_producto, $vendedor_collection, $producto_collection, $gastocategoria_collection, $productomarca_collection, $proveedor_collection,$user_level,$clientes_collection, $almacen_collection);
 	}
 
 	function calcula_cajadiaria() {
@@ -3247,6 +3249,7 @@ class ReporteController {
 		SessionHandler()->check_session();
 		require_once "tools/excelreport.php";
 
+		$fecha = date('Y-m-d');
 		//$almacen_id = filter_input(INPUT_POST, $almacen_id);
 		$almacen_id = 1;
 		$select = "s.producto_id AS PROD_ID";
@@ -3293,6 +3296,22 @@ class ReporteController {
 				}
 			}
 		}
+
+		$subtitulo = "Stock a la fecha {$fecha}";
+		$array_encabezados = array('CODIGO','MARCA', 'PRODUCTO', 'STOCK', 'PRECIO VENTA');
+		$array_exportacion[] = $array_encabezados;
+		foreach ($stock_collection as $clave=>$valor) {
+			$array_temp = array($valor->producto->codigo
+								, $valor->producto->productomarca->denominacion
+								, $valor->producto->denominacion
+								, $valor->cantidad_actual
+								, $valor->producto->precio_venta);
+			$array_exportacion[] = $array_temp;
+
+		}
+
+		ExcelReport()->extraer_informe_conjunto($subtitulo, $array_exportacion);
+		exit;
 
 		print_r($stock_collection);exit;
 	}
