@@ -551,7 +551,8 @@ class ReporteController {
     	$from = "detallecierrehojaruta dchr INNER JOIN cierrehojaruta chr ON dchr.cierrehojaruta_id = chr.cierrehojaruta_id INNER JOIN ingresotipopago itp ON dchr.ingresotipopago = itp.ingresotipopago_id INNER JOIN estadoentrega ee ON dchr.estadoentrega = ee.estadoentrega_id INNER JOIN egreso e ON dchr.egreso_id = e.egreso_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
     	$where = "chr.fecha = '{$fecha_sys}' AND dchr.importe > 0";
     	$detallecierrehojaruta_collection = CollectorCondition()->get('DetalleCierreHojaRuta', $where, 4, $from, $select);
-    	print_r($cobranza_collection . "<hr>");
+    	print_r($cobranza_collection);
+    	print("<hr>");
     	print_r($detallecierrehojaruta_collection);
     	exit;
 
