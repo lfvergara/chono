@@ -250,15 +250,15 @@
         var ingresos_brutos = document.getElementById('ingresos_brutos').value;
         var impuesto_interno = document.getElementById('impuesto_interno').value;
         var costo_distribucion = document.getElementById('costo_distribucion').value;
-        console.log(iva);
         if (costo_base == 0) {
             return false;
         } else {
             var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno) + parseFloat(costo_distribucion);
 
-            document.getElementById('suma_total').innerHTML = 'TOTAL: $' + costo_base.toFixed(2);
-            document.getElementById('input_suma_total').value = costo_base.toFixed(2);
-            document.getElementById('input_suma_total_iva').value = costo_base.toFixed(2);
+            console.log(iva);
+            document.getElementById('suma_total').innerHTML = 'TOTAL: $' + valor_final.toFixed(2);
+            document.getElementById('input_suma_total').value = valor_final.toFixed(2);
+            document.getElementById('input_suma_total_iva').value = valor_final.toFixed(2);
             buscarProducto();
         }
     }
@@ -409,9 +409,9 @@
             //VALOR FINAL
             var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno) + parseFloat(costo_distribucion);
             
-            document.getElementById('suma_total').innerHTML = 'TOTAL: $' + costo_base.toFixed(2);
-            document.getElementById('input_suma_total').value = costo_base.toFixed(2);
-            document.getElementById('input_suma_total_iva').value = costo_base.toFixed(2);
+            document.getElementById('suma_total').innerHTML = 'TOTAL: $' + valor_final.toFixed(2);
+            document.getElementById('input_suma_total').value = valor_final.toFixed(2);
+            document.getElementById('input_suma_total_iva').value = valor_final.toFixed(2);
             array_ids.push(producto_id);
             
             buscarProducto();
@@ -459,9 +459,9 @@
             //VALOR FINAL
             var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno) + parseFloat(costo_distribucion);
             
-            document.getElementById('suma_total').innerHTML = 'TOTAL: $' + costo_base.toFixed(2);
-            document.getElementById('input_suma_total').value = costo_base.toFixed(2);
-            document.getElementById('input_suma_total_iva').value = costo_base.toFixed(2);
+            document.getElementById('suma_total').innerHTML = 'TOTAL: $' + valor_final.toFixed(2);
+            document.getElementById('input_suma_total').value = valor_final.toFixed(2);
+            document.getElementById('input_suma_total_iva').value = valor_final.toFixed(2);
             buscarProducto();
         }
     }
@@ -497,9 +497,9 @@
         //VALOR FINAL
         var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno) + parseFloat(costo_distribucion);
 
-        document.getElementById('suma_total').innerHTML = 'TOTAL: $' + costo_base.toFixed(2);
-        document.getElementById('input_suma_total').value = costo_base.toFixed(2);
-        document.getElementById('input_suma_total_iva').value = costo_base.toFixed(2);
+        document.getElementById('suma_total').innerHTML = 'TOTAL: $' + valor_final.toFixed(2);
+        document.getElementById('input_suma_total').value = valor_final.toFixed(2);
+        document.getElementById('input_suma_total_iva').value = valor_final.toFixed(2);
 
         bodyTblProducto.removeChild(trTblProducto);   
         div_array_ingresos.removeChild(input_producto_id);
