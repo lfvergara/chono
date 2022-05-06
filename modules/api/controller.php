@@ -324,8 +324,7 @@ class ApiController {
         echo Util::respuestaJSON($json);
     }
 
-    function newcliente() {
-        
+    function newcliente() {        
         $vendedor_id = $_POST['vendedor_id'];
         $select = "cliente_id";
         $from = "cliente";
