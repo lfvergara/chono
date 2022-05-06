@@ -90,31 +90,19 @@ class ApiController {
     }
 
     function usuario() {
-        if (isset($_POST['token']) && !empty($_POST['token'])) {
-            $token = $_POST['token'];
-            $jwt = new JwtProtocolo();
-            if ($jwt->autenticar($token)) {
-                $arraySinCRC32 = Collector()->get('Usuario');
-                $arrayConCRC32 = array();
-                foreach ($arraySinCRC32 as $value) {
-                    $userAux = new stdClass();
-                    $userAux->crc32 = hash(ALGORITMO_USER, $value->denominacion);
-                    $userAux->usuario_id = $value->usuario_id;
-                    $arrayConCRC32[] = $userAux;
-                }
-                $respuesta['usuario_collection'] = $arraySinCRC32;
-                $respuesta['crc_collection'] = $arrayConCRC32;
-                $json = new stdClass();
-                $json->resultados = $respuesta;
-                echo Util::respuestaJSON($json);
-            } else {
-                $error_texto = Util::getTextoCodigo(72);
-                echo $error_texto;
-            }
-        } else {
-            $error_texto = Util::getTextoCodigo(77);
-            echo $error_texto;
+        $arraySinCRC32 = Collector()->get('Usuario');
+        $arrayConCRC32 = array();
+        foreach ($arraySinCRC32 as $value) {
+            $userAux = new stdClass();
+            $userAux->crc32 = hash(ALGORITMO_USER, $value->denominacion);
+            $userAux->usuario_id = $value->usuario_id;
+            $arrayConCRC32[] = $userAux;
         }
+        $respuesta['usuario_collection'] = $arraySinCRC32;
+        $respuesta['crc_collection'] = $arrayConCRC32;
+        $json = new stdClass();
+        $json->resultados = $respuesta;
+        echo Util::respuestaJSON($json);
     }
 
     function vendedor() {
