@@ -932,8 +932,12 @@
 
     function quitarProducto(producto_id) {    
         array_ids.forEach(function(temp_producto_id, index) {
-            console.log("Index: " + index + " - Producto_id: " + temp_producto_id);
+            if (producto_id == temp_producto_id) {
+                array_ids.splice(index, 1);
+            }
         });
+        
+        console.log(array_ids);
     }
 
     function verificarEgreso() {
