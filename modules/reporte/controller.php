@@ -2720,6 +2720,7 @@ class ReporteController {
 		$array_exportacion = array();
 		$array_exportacion[] = $array_encabezados;
 
+		$cantidad_venta_producto = $this->order_collection_array($cantidad_venta_producto, 'CANTIDAD_FINAL', SORT_DESC);
 		foreach ($cantidad_venta_producto as $clave=>$valor) {
 			$array_temp = array();
 			$array_temp = array($valor["CODIGO"]
@@ -3236,5 +3237,16 @@ class ReporteController {
 		ExcelReportTipo2()->extraer_informe($subtitulo, $array_exportacion);
 		exit;
 	}
+
+	// COMMMON
+	function order_collection_array($collection, $column, $criterion) {
+        $array_temp = array();
+        foreach ($collection as $array) {
+            $array_temp[] = $array["{$column}"];
+        }
+        array_multisort($array_temp, $criterion, $collection);
+        return $collection;
+    }
+
 }
 ?>
