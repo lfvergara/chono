@@ -926,7 +926,14 @@
         div_array_egresos.removeChild(input_importe_descuento);
         div_array_egresos.removeChild(input_costo);
         div_array_egresos.removeChild(input_costo_total);
+        quitarProducto(producto_id);
         console.log(array_ids);
+    }
+
+    function quitarProducto(producto_id) {    
+        array_ids.forEach(function(array_ids, index) {
+            console.log(${index} : ${array_ids});
+        });
     }
 
     function verificarEgreso() {
