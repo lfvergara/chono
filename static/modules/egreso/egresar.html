@@ -830,13 +830,13 @@
             } else {
                 var quitar = /\$/g;
 
-                var td_cantidad = document.getElementById('idTdCantidad_' + producto_id);
+                var td_cantidad = document.getElementById('idTdCantidad_' + j);
                 var old_cantidad = td_cantidad.innerHTML;
-                var td_descuento = document.getElementById('idTdDescuento_' + producto_id);
+                var td_descuento = document.getElementById('idTdDescuento_' + j);
                 var old_descuento = td_descuento.innerHTML;
-                var td_importedescuento = document.getElementById('idTdImporteDescuento_' + producto_id);
+                var td_importedescuento = document.getElementById('idTdImporteDescuento_' + j);
                 var old_importedescuento = td_importedescuento.innerHTML;
-                var td_total = document.getElementById('idTdTotal_' + producto_id);
+                var td_total = document.getElementById('idTdTotal_' + j);
                 var old_total = td_total.innerHTML;
                 old_total = old_total.replace(quitar, '');
 
@@ -848,10 +848,10 @@
                 td_total.innerHTML = '$' + costo_total;
 
                 //SUSTITUYE VALORES EN INPUTS HIDDEN
-                document.getElementById("cantidad_" + producto_id).value = cantidad;
-                document.getElementById("descuento_" + producto_id).value = descuento;
-                document.getElementById("importe_descuento_" + producto_id).value = importe_descuento;
-                document.getElementById("costo_total_" + producto_id).value = costo_total;
+                document.getElementById("cantidad_" + j).value = cantidad;
+                document.getElementById("descuento_" + j).value = descuento;
+                document.getElementById("importe_descuento_" + j).value = importe_descuento;
+                document.getElementById("costo_total_" + j).value = costo_total;
 
                 costo_final = 0;
                 costo_base = parseFloat(costo_base) - parseFloat(old_total);
