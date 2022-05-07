@@ -73,13 +73,17 @@
                             <label>IVA</label>
                             <input type="number" class="form-control" id="iva" name="iva" value="0" onchange="actualizarCostoFinal();" step="0.01" required>
                         </div>
-                        <div class="form-group col-lg-6">
+                        <div class="form-group col-lg-3">
+                            <label>Flete</label>
+                            <input type="number" class="form-control" id="costo_distribucion" name="costo_distribucion" value="0" onchange="actualizarCostoFinal();" step="0.01" required>
+                        </div>
+                        <div class="form-group col-lg-4">
                             <label>Condición IVA</label>
                             <select class="form-control m-bot15" name="condicioniva" id="condicioniva" required>
                                 {slt_condicioniva}
                             </select>
                         </div>
-                        <div class="form-group col-lg-6">
+                        <div class="form-group col-lg-4">
                             <label>Condición Pago</label>
                             <select class="form-control m-bot15" name="condicionpago" id="condicionpago" required>
                                 {slt_condicionpago}
@@ -170,7 +174,6 @@
                     </div>
                     <div class="form-group col-lg-12" align="right" id="div_array_ingresos">
                         <input type="hidden" name="producto" id="producto">
-                        <input type="hidden" id="costo_distribucion" name="costo_distribucion" value="0">
                         <input type="hidden" value="1" id="actualiza_stock" name="opcion_stock">
                         <input type="hidden" value="0" id="actualiza_precio_producto" name="opcion_producto_proveedor">
                         <input type="hidden" name="suma_total" id="input_suma_total">
@@ -374,11 +377,12 @@
         var percepcion_iva = document.getElementById('percepcion_iva').value;
         var ingresos_brutos = document.getElementById('ingresos_brutos').value;
         var impuesto_interno = document.getElementById('impuesto_interno').value;
+        var flete = document.getElementById('costo_distribucion').value;
         
         if (costo_base == 0) {
             return false;
         } else {
-            var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno);
+            var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno) + parseFloat(flete);
 
             document.getElementById('suma_total').innerHTML = 'TOTAL: $' + costo_base.toFixed(4);
             document.getElementById('suma_total_iva').innerHTML = 'TOTAL(IVA): $' + valor_final.toFixed(4);
@@ -524,12 +528,13 @@
             var percepcion_iva = document.getElementById('percepcion_iva').value;
             var ingresos_brutos = document.getElementById('ingresos_brutos').value;
             var impuesto_interno = document.getElementById('impuesto_interno').value;
+            var flete = document.getElementById('costo_distribucion').value;
            
             //SUMO NUEVO IMPORTE A COSTO BASE
             costo_base = parseFloat(costo_base) + parseFloat(costo_total);
             
             //VALOR FINAL
-            var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno);
+            var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno) + parseFloat(flete);
             
             document.getElementById('suma_total').innerHTML = 'SUBTOTAL: $' + costo_base.toFixed(4);
             document.getElementById('suma_total_iva').innerHTML = 'TOTAL: $' + valor_final.toFixed(4);
@@ -574,6 +579,7 @@
             var percepcion_iva = document.getElementById('percepcion_iva').value;
             var ingresos_brutos = document.getElementById('ingresos_brutos').value;
             var impuesto_interno = document.getElementById('impuesto_interno').value;
+            var flete = document.getElementById('costo_distribucion').value;
            
             //RESTO VIEJO IMPORTE DE COSTO BASE
             costo_base = parseFloat(costo_base) - parseFloat(old_total);
@@ -581,7 +587,7 @@
             costo_base = parseFloat(costo_base) + parseFloat(costo_total);
             
             //VALOR FINAL
-            var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno);
+            var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno) + parseFloat(flete);
             
             document.getElementById('suma_total').innerHTML = 'SUBTOTAL: $' + costo_base.toFixed(4);
             document.getElementById('suma_total_iva').innerHTML = 'TOTAL: $' + valor_final.toFixed(4);
@@ -614,12 +620,13 @@
         var percepcion_iva = document.getElementById('percepcion_iva').value;
         var ingresos_brutos = document.getElementById('ingresos_brutos').value;
         var impuesto_interno = document.getElementById('impuesto_interno').value;
+        var flete = document.getElementById('costo_distribucion').value;
            
         //RESTO VIEJO IMPORTE DE COSTO BASE
         costo_base = parseFloat(costo_base) - parseFloat(total_quitar);
         
         //VALOR FINAL
-        var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno);
+        var valor_final = parseFloat(costo_base) + parseFloat(iva) + parseFloat(percepcion_iva) + parseFloat(ingresos_brutos) + parseFloat(impuesto_interno) + parseFloat(flete);
 
         document.getElementById('suma_total').innerHTML = 'TOTAL: $' + costo_base.toFixed(4);
         document.getElementById('suma_total_iva').innerHTML = 'TOTAL(IVA): $' + valor_final.toFixed(4);
