@@ -671,7 +671,7 @@
         var costo_total_oculto = document.getElementById('costo_total_oculto').value;
 
         if(parseFloat(cantidad) <= parseFloat(cantidad_disponible)) {
-            if(parseInt(flag) === -1){
+            //if(parseInt(flag) === -1){
                 var bodyTblProducto = document.getElementById('bodyTblProducto');
 
                 /* FILA */
@@ -827,6 +827,7 @@
                 j = j + 1;
 
                 buscarProducto();
+            /*
             } else {
                 var quitar = /\$/g;
 
@@ -873,6 +874,7 @@
 
                 buscarProducto();   
             }
+            */
         } else {
             document.getElementById('alerta_stock').style.display = 'block';
             return false;
