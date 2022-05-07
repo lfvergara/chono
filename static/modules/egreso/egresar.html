@@ -827,7 +827,6 @@
                 j = j + 1;
 
                 buscarProducto();
-                console.log(array_ids);
             } else {
                 var quitar = /\$/g;
 
@@ -873,7 +872,6 @@
                 document.getElementById('input_importe_total').value = subtotal.toFixed(2);
 
                 buscarProducto();
-                console.log(array_ids);
             }
         } else {
             document.getElementById('alerta_stock').style.display = 'block';
@@ -926,18 +924,15 @@
         div_array_egresos.removeChild(input_importe_descuento);
         div_array_egresos.removeChild(input_costo);
         div_array_egresos.removeChild(input_costo_total);
-        quitarProducto(producto_id);
-        console.log(array_ids);
+        quitarProductoArray(producto_id);
     }
 
-    function quitarProducto(producto_id) {    
+    function quitarProductoArray(producto_id) {    
         array_ids.forEach(function(temp_producto_id, index) {
             if (producto_id == temp_producto_id) {
                 array_ids.splice(index, 1);
             }
         });
-        
-        console.log(array_ids);
     }
 
     function verificarEgreso() {
