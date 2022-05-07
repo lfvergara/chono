@@ -827,6 +827,7 @@
                 j = j + 1;
 
                 buscarProducto();
+                console.log(array_ids);
             } else {
                 var quitar = /\$/g;
 
@@ -871,7 +872,8 @@
                 document.getElementById('input_subtotal').value = subtotal.toFixed(2);
                 document.getElementById('input_importe_total').value = subtotal.toFixed(2);
 
-                buscarProducto();   
+                buscarProducto();
+                console.log(array_ids);
             }
         } else {
             document.getElementById('alerta_stock').style.display = 'block';
@@ -924,6 +926,7 @@
         div_array_egresos.removeChild(input_importe_descuento);
         div_array_egresos.removeChild(input_costo);
         div_array_egresos.removeChild(input_costo_total);
+        console.log(array_ids);
     }
 
     function verificarEgreso() {
