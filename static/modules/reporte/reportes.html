@@ -28,7 +28,7 @@
                 </div>
                 <div class="x_content">
                     <div class=" form">
-                        <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/post_descarga">
+                        <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/desc_producto_vendedor_fecha">
                             <div class="form-group col-lg-6">
                                 <label>Desde</label>
                                 <input type="date" class="form-control" id="desde" name="desde" required>
@@ -82,7 +82,6 @@
                                 </div>
                             </div>
                             <div class="form-group col-lg-12" style="margin-top: 2%;" align="right" id="div_array_reporte_producto_vendedor_fecha">
-                                <input type="hidden" name="tipo_busqueda" value="3">
                                 <button class="btn btn-xs btn-primary" type="submit" style="width: 100%"> <i class="fa fa-download"></i> Descargar </button>
                             </div>
                         </form>
@@ -157,12 +156,45 @@
     </div>
     <div class="col-md-4 col-sm-4 col-xs-12">
         <div class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 0px; padding-right: 0px;">
+            <div class="x_panel hidden-print">
+                <div class="x_title">
+                    <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Cantidad Producto por Vendedor</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class=" form">
+                        <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/desc_cantidad_producto_vendedor_fecha">
+                            <div class="form-group col-lg-12">
+                                <label>Vendedor</label>
+                                <select class="form-control m-bot15" name="vendedor" id="vendedor" required>
+                                    {slt_vendedor}
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Desde</label>
+                                <input type="date" class="form-control" id="desde" name="desde" required>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Hasta</label>
+                                <input type="date" class="form-control" id="hasta" name="hasta" required>
+                            </div>
+                            <div class="col-lg-12" style="margin-top: 2%;" align="right">
+                                <button class="btn btn-xs btn-primary" type="submit" style="width: 100%"> <i class="fa fa-download"></i> Descargar </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 0px; padding-right: 1px;">
                 <div class="x_panel" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%;">
                     <div class="x_title" style="padding-left: 3%;">
                         <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Más Vendidos ($)</h2>
                         <ul class="nav navbar-right panel_toolbox">
-                            <li><a href="{url_app}/reporte/get_descarga/1"><i class="fa fa-download" style="color: #04B404;"></i></a></li>
+                            <li><a href="{url_app}/reporte/desc_producto_importe"><i class="fa fa-download" style="color: #04B404;"></i></a></li>
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                             <li><a class="close-link"><i class="fa fa-close"></i></a></li>
                         </ul>
@@ -182,7 +214,7 @@
                     <div class="x_title" style="padding-left: 3%;">
                         <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Más Vendidos (Cant)</h2>
                         <ul class="nav navbar-right panel_toolbox">
-                            <li><a href="{url_app}/reporte/get_descarga/2"><i class="fa fa-download" style="color: #04B404;"></i></a></li>
+                            <li><a href="{url_app}/reporte/desc_producto_cantidad"><i class="fa fa-download" style="color: #04B404;"></i></a></li>
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                             <li><a class="close-link"><i class="fa fa-close"></i></a></li>
                         </ul>
@@ -194,6 +226,39 @@
                                 {tbl_sum_cantidad_producto}
                             </thead>
                         </table>
+                    </div>
+                </div>
+            </div>
+            <div class="x_panel hidden-print">
+                <div class="x_title">
+                    <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Ventas por Vendedor y Cliente</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class=" form">
+                        <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/desc_importe_venta_cliente_vendedor_fecha">
+                            <div class="form-group col-lg-12">
+                                <label>Vendedor</label>
+                                <select class="form-control m-bot15" name="vendedor" id="vendedor" required>
+                                    {slt_vendedor}
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Desde</label>
+                                <input type="date" class="form-control" id="desde" name="desde" required>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Hasta</label>
+                                <input type="date" class="form-control" id="hasta" name="hasta" required>
+                            </div>
+                            <div class="col-lg-12" style="margin-top: 2%;" align="right">
+                                <button class="btn btn-xs btn-primary" type="submit" style="width: 100%"> <i class="fa fa-download"></i> Descargar </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -209,13 +274,7 @@
                 <div class="x_content">
                     <div class=" form">
                         <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/clientes_no_compra_x_dias">
-                            <div class="form-group col-lg-12">
-                                <label>Vendedor</label>
-                                <select class="form-control m-bot15" name="vendedor" id="vendedor" required>
-                                    {slt_vendedor}
-                                </select>
-                            </div>
-                            <div class="form-group col-lg-12">
+                            <div class="form-group col-lg-12" align="center">
                               <label>Cantidad de Días</label>
                               <input type="number" class="form-control" id="dias" name="dias" required="">
                             </div>
@@ -227,61 +286,10 @@
                     </div>
                 </div>
             </div>
-            <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%; display: {display_perfil};">
-                <div class="x_title" style="padding-left: 2%;">
-                    <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Stock Valorizado</h2>
-                    <ul class="nav navbar-right panel_toolbox">
-                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                    </ul>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <div class=" form">
-                        <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/descarga_stock_valorizado">
-                            <div class="form-group col-lg-12">
-                                <label>Proveedor</label>
-                                <select class="form-control m-bot15" name="proveedor" id="proveedor" required>
-                                    {slt_proveedor}
-                                </select>
-                            </div>
-                            <div class="form-group col-lg-12" style="margin-top: 2%;" align="right">
-                                <input type="hidden" name="tipo_busqueda" value="1">
-                                <button class="btn btn-xs btn-primary" type="submit" style="width: 100%"> <i class="fa fa-download"></i> Descargar </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>            
         </div>
     </div>
 </div>
 <div class="col-md-3 col-sm-3 col-xs-12">
-    <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%;">
-        <div class="x_title" style="padding-left: 2%;">
-            <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Descargar stock por almacén</h2>
-            <ul class="nav navbar-right panel_toolbox">
-                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-            </ul>
-            <div class="clearfix"></div>
-        </div>
-        <div class="x_content">
-            <div class=" form">
-                <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/descargar_stock">
-                    <div class="form-group">
-                        <label>Almacén</label>
-                        <select class="form-control m-bot15" name="almacen" id="almacen" required>
-                            {slt_almacen}
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-top: 2%;" align="right">
-                        <button class="btn btn-xs btn-primary" type="submit" style="width: 100%"> <i class="fa fa-download"></i> Descargar </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
     <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%;">
         <div class="x_title" style="padding-left: 2%;">
             <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Buscar ventas</h2>
@@ -351,70 +359,7 @@
             </div>
         </div>
     </div>
-    <div class="x_panel hidden-print">
-        <div class="x_title">
-            <h2><i class="fa fa-search"></i>&nbsp;&nbsp;Total Ventas por vendedor</h2>
-            <ul class="nav navbar-right panel_toolbox">
-                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-            </ul>
-            <div class="clearfix"></div>
-        </div>
-        <div class="x_content">
-            <div class=" form">
-                <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/post_descarga">
-                    <div class="form-group col-lg-6">
-                        <label>Desde</label>
-                        <input type="date" class="form-control" id="desde" name="desde" required>
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label>Hasta</label>
-                        <input type="date" class="form-control" id="hasta" name="hasta" required>
-                    </div>
-                    <div class="col-lg-12" style="margin-top: 2%;" align="right">
-                        <input type="hidden" name="tipo_busqueda" value="7">
-                        <button class="btn btn-xs btn-primary" type="submit" style="width: 100%"> <i class="fa fa-download"></i> Descargar </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
     <div class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 0px; padding-right: 0px;">
-        <div class="x_panel">
-            <div class="x_title">
-                <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Gastos por Categoría</h2>
-                <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                </ul>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <div class=" form">
-                    <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/post_descarga">
-                        <div class="form-group col-lg-6">
-                            <label>Desde</label>
-                            <input type="date" class="form-control" id="desde" name="desde" required>
-                        </div>
-                        <div class="form-group col-lg-6">
-                            <label>Hasta</label>
-                            <input type="date" class="form-control" id="hasta" name="hasta" required>
-                        </div>
-                        <div class="form-group col-lg-12">
-                            <label>Categoría de Gasto</label>
-                            <select class="form-control m-bot15" name="gastocategoria" id="gastocategoria" required>
-                                <option value="all" selected>TODOS</option>
-                                {slt_gastocategoria}
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-12" style="margin-top: 2%;" align="right">
-                            <input type="hidden" name="tipo_busqueda" value="4">
-                            <button class="btn btn-xs btn-primary" type="submit" style="width: 100%"> <i class="fa fa-download"></i> Descargar </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
         <div class="x_panel hidden-print">
             <div class="x_title">
                 <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Totales Vendedor-Marca</h2>
@@ -426,7 +371,7 @@
             </div>
             <div class="x_content">
                 <div class=" form">
-                    <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/post_descarga">
+                    <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/desc_vendedor_marca">
                         <div class="form-group col-lg-12">
                             <label>Vendedor</label>
                             <select class="form-control m-bot15" name="vendedor_id" id="vendedor_id" required>
@@ -448,7 +393,66 @@
                             <input type="date" class="form-control" id="hasta" name="hasta" required>
                         </div>
                         <div class="col-lg-12" style="margin-top: 2%;" align="right">
-                            <input type="hidden" name="tipo_busqueda" value="6">
+                            <button class="btn btn-xs btn-primary" type="submit" style="width: 100%"> <i class="fa fa-download"></i> Descargar </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%; display: {display_perfil};">
+            <div class="x_title" style="padding-left: 2%;">
+                <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Stock Valorizado</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                    <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class=" form">
+                    <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/desc_stock_valorizado">
+                        <div class="form-group col-lg-12">
+                            <label>Proveedor</label>
+                            <select class="form-control m-bot15" name="proveedor" id="proveedor" required>
+                                {slt_proveedor}
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-12" style="margin-top: 2%;" align="right">
+                            <input type="hidden" name="tipo_busqueda" value="1">
+                            <button class="btn btn-xs btn-primary" type="submit" style="width: 100%"> <i class="fa fa-download"></i> Descargar </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="x_panel">
+            <div class="x_title">
+                <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Gastos por Categoría</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                    <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class=" form">
+                    <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/desc_gastos_categoria_fecha">
+                        <div class="form-group col-lg-6">
+                            <label>Desde</label>
+                            <input type="date" class="form-control" id="desde" name="desde" required>
+                        </div>
+                        <div class="form-group col-lg-6">
+                            <label>Hasta</label>
+                            <input type="date" class="form-control" id="hasta" name="hasta" required>
+                        </div>
+                        <div class="form-group col-lg-12">
+                            <label>Categoría de Gasto</label>
+                            <select class="form-control m-bot15" name="gastocategoria" id="gastocategoria" required>
+                                <option value="all" selected>TODOS</option>
+                                {slt_gastocategoria}
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-12" style="margin-top: 2%;" align="right">
                             <button class="btn btn-xs btn-primary" type="submit" style="width: 100%"> <i class="fa fa-download"></i> Descargar </button>
                         </div>
                     </form>
@@ -648,95 +652,6 @@
         </div>
     </div>
 </div>
-<div class="col-md-12 col-sm-12 col-xs-12">
-    <div class="col-md-4 col-sm-4 col-xs-12">
-        <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%; background: #d9534f; color: #FFF;">
-            <div class="x_title" style="padding-left: 2%;">
-                <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Libro IVA Ventas</h2>
-                <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                </ul>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <div class=" form">
-                    <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/generar_libro_iva_ventas">
-                        <div class="form-group col-lg-6">
-                            <label>Desde</label>
-                            <input type="date" class="form-control" id="desde" name="desde" required>
-                        </div>
-                        <div class="form-group col-lg-6">
-                            <label>Hasta</label>
-                            <input type="date" class="form-control" id="hasta" name="hasta" required>
-                        </div>
-                        <div class="form-group col-lg-12" style="margin-top: 2%;" align="right">
-                            <button class="btn btn-xs btn-primary" type="submit" style="width: 100%; background: #2a8a2a; border-color: #2a8a2a;"> <i class="fa fa-download"></i> Generar </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 col-sm-4 col-xs-12">
-        <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%; background: #d9534f; color: #FFF;">
-            <div class="x_title" style="padding-left: 2%;">
-                <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Libro IVA Compras</h2>
-                <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                </ul>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <div class=" form">
-                    <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/generar_libro_iva_compras">
-                        <div class="form-group col-lg-6">
-                            <label>Desde</label>
-                            <input type="date" class="form-control" id="desde" name="desde" required>
-                        </div>
-                        <div class="form-group col-lg-6">
-                            <label>Hasta</label>
-                            <input type="date" class="form-control" id="hasta" name="hasta" required>
-                        </div>
-                        <div class="form-group col-lg-12" style="margin-top: 2%;" align="right">
-                            <button class="btn btn-xs btn-primary" type="submit" style="width: 100%; background: #2a8a2a; border-color: #2a8a2a;"> <i class="fa fa-download"></i> Generar </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 col-sm-4 col-xs-12">
-        <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%; background: #d9534f; color: #FFF;">
-            <div class="x_title" style="padding-left: 2%;">
-                <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Libro IIBB Ventas</h2>
-                <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                </ul>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <div class=" form">
-                    <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/generar_libro_iibb_ventas">
-                        <div class="form-group col-lg-6">
-                            <label>Desde</label>
-                            <input type="date" class="form-control" id="desde" name="desde" required>
-                        </div>
-                        <div class="form-group col-lg-6">
-                            <label>Hasta</label>
-                            <input type="date" class="form-control" id="hasta" name="hasta" required>
-                        </div>
-                        <div class="form-group col-lg-12" style="margin-top: 2%;" align="right">
-                            <button class="btn btn-xs btn-primary" type="submit" style="width: 100%; background: #2a8a2a; border-color: #2a8a2a;"> <i class="fa fa-download"></i> Generar </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <!-- Datatables -->
 <script src="{url_static}vendors/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="{url_static}vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
@@ -850,7 +765,7 @@
             arrayInput.push(dataInput.value);
         });
 
-        var path = "{url_app}/reporte/post_generar/" + desde + "@" + hasta + "@" + vendedor + "@" + tipo_grafico + "@" + arrayInput;
+        var path = "{url_app}/reporte/ajax_cobertura_marca/" + desde + "@" + hasta + "@" + vendedor + "@" + tipo_grafico + "@" + arrayInput;
         var vinculo = path;
         miPeticion.open("GET", vinculo, true);
         miPeticion.onreadystatechange = miPeticion.onreadystatechange = function() {
