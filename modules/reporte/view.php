@@ -119,8 +119,6 @@ class ReporteView extends View {
 		$gui_detalle_comision = file_get_contents("static/modules/reporte/detalle_comision.html");
 		$gui_detalle_comision = $this->render_regex_dict('DETALLE_COMISION', $gui_detalle_comision, $detalle_comision);
 
-		print_r($)
-
 		$render = $this->render($array_totales, $gui);
 		$render = str_replace('{detalle_pagoproveedor}', $gui_detalle_pagoproveedor, $render);
 		$render = str_replace('{detalle_gastosvarios}', $gui_detalle_gasto_diario, $render);
