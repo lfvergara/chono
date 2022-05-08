@@ -454,200 +454,6 @@ class ReporteController {
 		$this->view->vdr_panel($pedidovendedor_collection, $array_totales);
 	}
 
-	function resumen_diario() {
-    	SessionHandler()->check_session();
-    	$fecha_sys = date('Y-m-d');
-
-    	$select = "cd.caja AS CAJA";
-		$from = "cajadiaria cd ORDER BY cd.fecha DESC LIMIT 1";
-		$cajadiaria = CollectorCondition()->get('CajaDiaria', NULL, 4, $from, $select);
-		$cajadiaria = (is_array($cajadiaria) AND !empty($cajadiaria)) ? $cajadiaria[0]['CAJA'] : 0;
-		$cajadiaria = (is_null($cajadiaria)) ? 0 : $cajadiaria;
-
-    	$select = "ROUND(SUM(e.importe_total),2) AS CONTADO";
-		$from = "egreso e INNER JOIN egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id INNER JOIN estadoentrega esen ON ee.estadoentrega = esen.estadoentrega_id";
-		$where = "e.condicionpago = 2 AND ee.fecha = CURDATE() AND esen.estadoentrega_id = 4";
-		$sum_contado = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
-		$sum_contado = (is_array($sum_contado)) ? $sum_contado[0]['CONTADO'] : 0;
-		$sum_contado = (is_null($sum_contado)) ? 0 : $sum_contado;
-		
-		$select = "ROUND(SUM(CASE WHEN ccc.tipomovimientocuenta = 2 OR ccc.tipomovimientocuenta = 3 THEN ccc.importe ELSE 0 END),2) AS TINGRESO";
-		$from = "cuentacorrientecliente ccc";
-		$where = "ccc.fecha = '{$fecha_sys}' AND ccc.ingresotipopago = 3";
-		$ingreso_cuentacorriente_hoy = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
-		$ingreso_cuentacorriente_hoy = (is_array($ingreso_cuentacorriente_hoy)) ? $ingreso_cuentacorriente_hoy[0]['TINGRESO'] : 0;
-		$ingreso_cuentacorriente_hoy = (is_null($ingreso_cuentacorriente_hoy)) ? 0 : $ingreso_cuentacorriente_hoy;
-
-		//COBRANZA
-		$cobranza = $sum_contado + $ingreso_cuentacorriente_hoy;
-
-		$select = "e.egreso_id AS EGRESO_ID, e.importe_total AS IMPORTETOTAL";
-		$from = "egreso e INNER JOIN cliente cl ON e.cliente = cl.cliente_id INNER JOIN vendedor ve ON e.vendedor = ve.vendedor_id INNER JOIN
-				 condicionpago cp ON e.condicionpago = cp.condicionpago_id INNER JOIN condicioniva ci ON e.condicioniva = ci.condicioniva_id INNER JOIN
-				 egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id INNER JOIN estadoentrega ese ON ee.estadoentrega = ese.estadoentrega_id LEFT JOIN
-				 egresoafip eafip ON e.egreso_id = eafip.egreso_id";
-		$where = "e.fecha = '{$fecha_sys}'";
-		$egresos_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
-
-		//DETALLE COBRANZA
-		$select = "c.cobrador_id AS CID, ccc.fecha AS FECHA, c.denominacion AS COBRADOR, ROUND(SUM(ccc.ingreso), 2) AS COBRANZA";
-		$from = "cuentacorrientecliente ccc INNER JOIN cobrador c ON ccc.cobrador = c.cobrador_id";
-		$where = "ccc.fecha = '{$fecha_sys}' AND ccc.tipomovimientocuenta = 2";
-		$group_by = "ccc.cobrador";
-		$cobranza_collection = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select, $group_by);
-
-		$suma_ingresos_hoy = 0;
-		$suma_notacredito_hoy = 0;
-		$total_facturacion_hoy = 0;
-		if (is_array($egresos_collection) AND !empty($egresos_collection)) {
-			foreach ($egresos_collection as $clave=>$valor) {
-				$egreso_importe_total = $egresos_collection[$clave]['IMPORTETOTAL'];
-
-				$egreso_id = $valor['EGRESO_ID'];
-				$select = "nc.importe_total AS IMPORTETOTAL";
-				$from = "notacredito nc";
-				$where = "nc.egreso_id = {$egreso_id}";
-				$notacredito = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
-
-				if (is_array($notacredito) AND !empty($notacredito)) {
-					$importe_notacredito = $notacredito[0]['IMPORTETOTAL'];
-					$suma_notacredito_hoy = $suma_notacredito_hoy + $importe_notacredito;
-				}
-
-				$suma_ingresos_hoy = $suma_ingresos_hoy + $egreso_importe_total;
-			}
-		}
-
-		//VENTAS DEL DÍA
-		$total_facturacion_hoy = $suma_ingresos_hoy - $suma_notacredito_hoy;
-
-		//PAGO PROVEEDORES
-		$select = "ROUND(SUM(CASE WHEN ccp.tipomovimientocuenta = 2 OR ccp.tipomovimientocuenta = 3 THEN ccp.importe ELSE 0 END),2) AS TSALIDA";
-		$from = "cuentacorrienteproveedor ccp";
-		$where = "ccp.fecha = '{$fecha_sys}' AND ccp.ingresotipopago NOT IN (1,4)";
-		$egreso_cuentacorrienteproveedor_hoy = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
-		$egreso_cuentacorrienteproveedor_hoy = (is_array($egreso_cuentacorrienteproveedor_hoy)) ? $egreso_cuentacorrienteproveedor_hoy[0]['TSALIDA'] : 0;
-		$egreso_cuentacorrienteproveedor_hoy = (is_null($egreso_cuentacorrienteproveedor_hoy)) ? 0 : $egreso_cuentacorrienteproveedor_hoy;
-
-		$select = "ROUND(SUM(i.costo_total_iva),2) AS PROVCONT";
-		$from = "ingreso i";
-		$where = "i.fecha = '{$fecha_sys}' AND i.condicionpago = 2";
-		$egreso_contadoproveedor_hoy = CollectorCondition()->get('Ingreso', $where, 4, $from, $select);
-		$egreso_contadoproveedor_hoy = (is_array($egreso_contadoproveedor_hoy)) ? $egreso_contadoproveedor_hoy[0]['PROVCONT'] : 0;
-		$egreso_contadoproveedor_hoy = (is_null($egreso_contadoproveedor_hoy)) ? 0 : $egreso_contadoproveedor_hoy;
-		$pago_proveedores = $egreso_cuentacorrienteproveedor_hoy + $egreso_contadoproveedor_hoy;
-
-		//DETALLE PAGO PROVEEDORES
-		$select = "p.razon_social AS RAZSOC, p.proveedor_id AS PID,
-				   ROUND(SUM(CASE WHEN ccp.tipomovimientocuenta = 2 OR ccp.tipomovimientocuenta = 3 THEN ccp.importe ELSE 0 END),2) AS TSALIDA,'{$fecha_sys}' AS FECHA";
-		$from = "cuentacorrienteproveedor ccp INNER JOIN proveedor p ON ccp.proveedor_id = p.proveedor_id";
-		$where = "ccp.fecha = '{$fecha_sys}' AND ccp.ingresotipopago != 1";
-		$groupby = "ccp.proveedor_id";
-		$detalle_cuentacorrienteproveedor_hoy = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select, $groupby);
-
-		$select = "p.razon_social AS RAZSOC, p.proveedor_id AS PID, ROUND(SUM(i.costo_total_iva),2) AS TSALIDA";
-		$from = "ingreso i INNER JOIN proveedor p ON i.proveedor = p.proveedor_id";
-		$where = "i.fecha = '{$fecha_sys}' AND i.condicionpago = 2";
-		$groupby = "i.proveedor";
-		$detalle_contadoproveedor_hoy = CollectorCondition()->get('Ingreso', $where, 4, $from, $select, $groupby);
-
-		if (is_array($detalle_cuentacorrienteproveedor_hoy) AND !empty($detalle_cuentacorrienteproveedor_hoy)) {
-			$detalle_pagoproveedor = $detalle_cuentacorrienteproveedor_hoy;
-
-			if (is_array($detalle_contadoproveedor_hoy) AND !empty($detalle_contadoproveedor_hoy)) {
-				foreach ($detalle_pagoproveedor as $clave=>$valor) {
-					$temp_proveedor_id = $valor["PID"];
-					foreach ($detalle_contadoproveedor_hoy as $k=>$v) {
-						$proveedor_id = $v["PID"];
-						if ($temp_proveedor_id == $proveedor_id) {
-							$detalle_pagoproveedor[$clave]["TSALIDA"] = $detalle_pagoproveedor[$clave]["TSALIDA"] + $detalle_contadoproveedor_hoy[$k]["TSALIDA"];
-						} else {
-							$array_temp = array("PID"=>$valor["PID"],
-												"RAZSOC"=>$valor["RAZSOC"],
-												"TSALIDA"=>$valor["TSALIDA"]);
-							$detalle_pagoproveedor[] = $array_temp;
-						}
-					}
-				}
-			}
-		} else {
-			if (is_array($detalle_contadoproveedor_hoy) AND !empty($detalle_contadoproveedor_hoy)) {
-				$detalle_pagoproveedor = $detalle_contadoproveedor_hoy;
-			} else {
-				$detalle_pagoproveedor = array();
-			}
-		}
-
-		//PAGO COMISIONES
-		$select = "ROUND(SUM(valor_abonado),2) AS ECOMISION";
-		$from = "egresocomision ec";
-		$where = "ec.fecha = '{$fecha_sys}' AND ec.estadocomision IN (2,3)";
-		$egreso_comision_hoy = CollectorCondition()->get('EgresoComision', $where, 4, $from, $select);
-		$egreso_comision_hoy = (is_array($egreso_comision_hoy)) ? $egreso_comision_hoy[0]['ECOMISION'] : 0;
-		$egreso_comision_hoy = (is_null($egreso_comision_hoy)) ? 0 : $egreso_comision_hoy;
-
-		//DETALLE COMISIONES
-		$select = "CONCAT(v.apellido,',',v.nombre) AS VENDEDOR,ROUND(SUM(ec.valor_abonado),2) AS VALOR,esc.denominacion AS ESTADO";
-		$from = "egresocomision ec  INNER JOIN egreso e ON e.egresocomision = ec.egresocomision_id INNER JOIN vendedor v ON v.vendedor_id = e.vendedor INNER JOIN estadocomision esc ON esc.estadocomision_id = ec.estadocomision";
-		$where = "ec.fecha = '{$fecha_sys}' AND ec.estadocomision IN (2,3) GROUP BY e.vendedor";
-		$detalle_comision = CollectorCondition()->get('EgresoComision', $where, 4, $from, $select);
-
-		//GASTO DIARIO
-		$select = "ROUND(SUM(g.importe), 2) AS IMPORTETOTAL";
-		$from = "gasto g";
-		$where = "g.fecha = '{$fecha_sys}' ";
-		$gasto_diario = CollectorCondition()->get('Gasto', $where, 4, $from, $select);
-		$gasto_diario = (is_array($gasto_diario)) ? $gasto_diario[0]['IMPORTETOTAL'] : 0;
-		$gasto_diario = (is_null($gasto_diario)) ? 0 : $gasto_diario;
-
-		//DETALLE GASTO DIARIO
-		$select = "gc.denominacion AS CATEGORIA,g.detalle AS DETALLE,ROUND(g.importe, 2) AS IMPORTETOTAL";
-		$from = "gasto g INNER JOIN gastocategoria gc on gc.gastocategoria_id = g.gastocategoria INNER JOIN gastosubcategoria gs on gs.gastosubcategoria_id = gc.gastosubcategoria";
-		$where = "g.fecha = '{$fecha_sys}'";
-		$detalle_gasto_diario = CollectorCondition()->get('Gasto', $where, 4, $from, $select);
-
-		//LIQUIDACIONES
-		$select = "ROUND(SUM(s.monto), 2) AS IMPORTETOTAL";
-		$from = "salario s";
-		$where = "s.fecha = '{$fecha_sys}' AND s.tipo_pago IN ('SALARIO', 'ADELANTO')";
-		$liquidacion = CollectorCondition()->get('Salario', $where, 4, $from, $select);
-		$liquidacion = (is_array($liquidacion)) ? $liquidacion[0]['IMPORTETOTAL'] : 0;
-		$liquidacion = (is_null($liquidacion)) ? 0 : $liquidacion;
-
-		//DETALLE LIQUIDACIONES
-		$select = "CONCAT(e.apellido, e.nombre) AS EMPLEADO, CONCAT('Desde ', date_format(s.desde, '%d/%m/%Y'), 'hasta el ', date_format(s.hasta, '%d/%m/%Y')) AS DETALLE, ROUND(s.monto, 2) AS IMPORTETOTAL";
-		$from = "salario s INNER JOIN empleado e on e.empleado_id = s.empleado";
-		$where = "s.fecha = '{$fecha_sys}' AND s.tipo_pago IN ('SALARIO', 'ADELANTO')";
-		$detalle_liquidacion = CollectorCondition()->get('Salario', $where, 4, $from, $select);
-
-		//VEHICULOS
-		$select = "ROUND(SUM(vc.importe), 2) AS IMPORTETOTAL";
-		$from = "vehiculocombustible vc";
-		$where = "vc.fecha = '{$fecha_sys}'";
-		$vehiculos = CollectorCondition()->get('VehiculoCombustible', $where, 4, $from, $select);
-		$vehiculos = (is_array($vehiculos)) ? $vehiculos[0]['IMPORTETOTAL'] : 0;
-		$vehiculos = (is_null($vehiculos)) ? 0 : $vehiculos;
-
-		//DETALLE VEHICULOS
-		$select = "v.denominacion AS DETALLE,ROUND(vc.importe, 2) AS IMPORTETOTAL";
-		$from = "vehiculocombustible vc INNER JOIN vehiculo v ON v.vehiculo_id = vc.vehiculo";
-		$where = "vc.fecha = '{$fecha_sys}'";
-		$detalle_vehiculos = CollectorCondition()->get('VehiculoCombustible', $where, 4, $from, $select);
-
-		$calculo_cajadiaria = $this->calcula_cajadiaria();
-
-		$array_totales = array('{cobranza}'=>$cobranza,
-							   '{ventas}'=>$total_facturacion_hoy,
-							   '{pago_proveedores}'=>$pago_proveedores,
-							   '{pago_comisiones}'=>$egreso_comision_hoy,
-							   '{gasto_diario}'=>$gasto_diario,
-								 '{liquidacion}'=>$liquidacion,
-								 '{vehiculos}'=>$vehiculos,
-							   '{caja}'=>$calculo_cajadiaria,
-							   '{fecha}'=>$fecha_sys);
-		$this->view->resumen_diario($array_totales, $cobranza_collection, $detalle_pagoproveedor,$detalle_gasto_diario,$detalle_liquidacion,$detalle_vehiculos,$detalle_comision, 1);
-	}
-
 	function detalle_facturaproveedor($arg) {
 		SessionHandler()->check_session();
 
@@ -712,28 +518,6 @@ class ReporteController {
 		$cajadiaria = CollectorCondition()->get('CajaDiaria', $where, 4, $from, $select);
 		$cajadiaria = (is_array($cajadiaria) AND !empty($cajadiaria)) ? $cajadiaria[0]['CAJA'] : 0;
 		$cajadiaria = (is_null($cajadiaria)) ? 0 : $cajadiaria;
-
-		//COBRANZA CONTADO
-		// DETALLE
-		/*
-		$select = "";
-		$from = "egreso e INNER JOIN egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id INNER JOIN estadoentrega esen ON ee.estadoentrega = esen.estadoentrega_id";
-		$where = "e.condicionpago = 2 AND ee.fecha = '{$fecha_filtro}' AND esen.estadoentrega_id = 4";
-		$sum_contado = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
-		$sum_contado = (is_array($sum_contado)) ? $sum_contado[0]['CONTADO'] : 0;
-		$sum_contado = (is_null($sum_contado)) ? 0 : $sum_contado;		
-
-		$select = "chr.cierrehojaruta_id AS CHRID, CONCAT(date_format(chr.fecha, '%d/%m/%Y'), ' ', chr.hora) AS FECHA, FORMAT(chr.rendicion, 2,'de_DE') AS RENDICION, chr.hojaruta_id AS HOJARUTA, c.denominacion AS FLETE";
-    	$from = "cierrehojaruta chr INNER JOIN cobrador c ON chr.cobrador = c.cobrador_id";
-    	$where = "chr.fecha BETWEEN '{$desde}-01' AND '{$hasta}' ORDER BY chr.cierrehojaruta_id DESC";
-    	$cierrehojaruta_collection = CollectorCondition()->get('CierreHojaRuta', $where, 4, $from, $select);
-
-		$select = "c.cobrador_id AS CID, ccc.fecha AS FECHA, c.denominacion AS COBRADOR, ROUND(SUM(ccc.ingreso), 2) AS COBRANZA";
-		$from = "cuentacorrientecliente ccc INNER JOIN cobrador c ON ccc.cobrador = c.cobrador_id";
-		$where = "ccc.fecha = '{$fecha_filtro}' AND ccc.tipomovimientocuenta = 2";
-		$group_by = "ccc.cobrador";
-		$cobranza_collection = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select, $group_by);
-		*/
 
 		//COBRANZA CONTADO
     	$select = "ROUND(SUM(e.importe_total),2) AS CONTADO";
@@ -2387,113 +2171,193 @@ class ReporteController {
 
 	}
 
-	function reporte_15dias(){
-		SessionHandler()->check_session();
-		require_once "tools/excelreport.php";
+	// PANELES RESÚMENES
+	function resumen_diario() {
+    	SessionHandler()->check_session();
+    	$fecha_filtro = filter_input(INPUT_POST, 'fecha');
+    	if (is_null($fecha_filtro) OR empty($fecha_filtro) OR $fecha_filtro == '' OR $fecha_filtro == 0) {
+    		$fecha_filtro = date('Y-m-d');
+    	}
 
-		$fecha_desde = filter_input(INPUT_POST, 'desde');
-		$fecha_hasta = filter_input(INPUT_POST, 'hasta');
-		$tipo_busqueda = filter_input(INPUT_POST, 'tipo_busqueda');
+    	$select = "ROUND(SUM(e.importe_total),2) AS CONTADO";
+		$from = "egreso e INNER JOIN egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id INNER JOIN estadoentrega esen ON ee.estadoentrega = esen.estadoentrega_id";
+		$where = "e.condicionpago = 2 AND ee.fecha = CURDATE() AND esen.estadoentrega_id = 4";
+		$sum_contado = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
+		$sum_contado = (is_array($sum_contado)) ? $sum_contado[0]['CONTADO'] : 0;
+		$cobranza_contado = (is_null($sum_contado)) ? 0 : $sum_contado;
+		
+		$select = "ROUND(SUM(CASE WHEN ccc.tipomovimientocuenta = 2 OR ccc.tipomovimientocuenta = 3 THEN ccc.importe ELSE 0 END),2) AS TINGRESO";
+		$from = "cuentacorrientecliente ccc";
+		$where = "ccc.fecha = '{$fecha_filtro}' AND ccc.ingresotipopago = 3";
+		$ingreso_cuentacorriente_hoy = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
+		$ingreso_cuentacorriente_hoy = (is_array($ingreso_cuentacorriente_hoy)) ? $ingreso_cuentacorriente_hoy[0]['TINGRESO'] : 0;
+		$cobranza_cuentacorriente = (is_null($ingreso_cuentacorriente_hoy)) ? 0 : $ingreso_cuentacorriente_hoy;
 
-		$array_exportacion = array();
-		switch ($tipo_busqueda) {
-		    case 1:
-						if (!empty($_POST['producto_id'])) {
-							$producto_id = $_POST['producto_id'];
-							$producto_id = implode(',', $producto_id);
+		// VENTAS
+		$select = "e.egreso_id AS EGRESO_ID, e.importe_total AS IMPORTETOTAL";
+		$from = "egreso e INNER JOIN cliente cl ON e.cliente = cl.cliente_id INNER JOIN vendedor ve ON e.vendedor = ve.vendedor_id INNER JOIN
+				 condicionpago cp ON e.condicionpago = cp.condicionpago_id INNER JOIN condicioniva ci ON e.condicioniva = ci.condicioniva_id INNER JOIN
+				 egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id INNER JOIN estadoentrega ese ON ee.estadoentrega = ese.estadoentrega_id LEFT JOIN
+				 egresoafip eafip ON e.egreso_id = eafip.egreso_id";
+		$where = "e.fecha = '{$fecha_filtro}'";
+		$egresos_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
 
- 							$tipo_where = "pd.producto_id IN ({$producto_id})";
-							$tipo_groupby = "";
+		$suma_ingresos_hoy = 0;
+		$suma_notacredito_hoy = 0;
+		$total_facturacion_hoy = 0;
+		if (is_array($egresos_collection) AND !empty($egresos_collection)) {
+			foreach ($egresos_collection as $clave=>$valor) {
+				$egreso_importe_total = $egresos_collection[$clave]['IMPORTETOTAL'];
 
-							$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Productos";
-							$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA');
-						}
-		        break;
-		    case 2:
-						if (!empty($_POST['marca_id'])) {
-							$marca_id = $_POST['marca_id'];
-							$marca_id = implode(',', $marca_id);
+				$egreso_id = $valor['EGRESO_ID'];
+				$select = "nc.importe_total AS IMPORTETOTAL";
+				$from = "notacredito nc";
+				$where = "nc.egreso_id = {$egreso_id}";
+				$notacredito = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
 
-							$tipo_where = "pro.productomarca IN ({$marca_id})";
-							$tipo_groupby = ",pro.productomarca";
+				if (is_array($notacredito) AND !empty($notacredito)) {
+					$importe_notacredito = $notacredito[0]['IMPORTETOTAL'];
+					$suma_notacredito_hoy = $suma_notacredito_hoy + $importe_notacredito;
+				}
 
-							$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Marcas";
-							$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA', 'MARCA');
-
-						}
-		        break;
-		    case 3:
-						if (!empty($_POST['proveedor_id'])) {
-							$proveedor_id = $_POST['proveedor_id'];
-							$proveedor_id = implode(',', $proveedor_id);
-
-							$tipo_where = "pd.proveedor_id IN ({$proveedor_id})";
-							$tipo_groupby = ",pd.proveedor_id";
-
-							$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Proveedores";
-							$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA', 'PROVEEDOR');
- 						}
-		        break;
-				case 4:
-						if (!empty($_POST['vendedor_id'])) {
-							$vendedor_id = $_POST['vendedor_id'];
-							$vendedor_id = implode(',', $vendedor_id);
-
-							$tipo_where = "e.vendedor IN ({$vendedor_id})";
-							$tipo_groupby = ",e.vendedor";
-
-							$subtitulo = "Reporte periodo {$fecha_desde} a  {$fecha_hasta} - Vendedores";
-							$array_encabezados = array('CODIGO','PRODUCTO', 'CANTIDAD', 'CLIENTE', 'NOMBRE_FANTASIA', 'VENDEDOR');
-						}
-		        break;
-		}
-
-		$select = "ed.codigo_producto AS CODIGO,ed.descripcion_producto AS PRODUCTO,ed.cantidad AS CANTIDAD,cl.razon_social AS CLIENTE,
-		cl.nombre_fantasia AS NOMBRE_FANTASIA,CONCAT(v.apellido,',',v.nombre) AS VENDEDOR,pr.razon_social AS PROVEEDOR,pm.denominacion AS MARCA";
-		$from = "egreso e INNER JOIN cliente cl ON e.cliente = cl.cliente_id INNER JOIN provincia p ON cl.provincia = p.provincia_id
-		INNER JOIN egresodetalle ed ON ed.egreso_id = e.egreso_id INNER JOIN productodetalle pd ON pd.producto_id = ed.producto_id
-		INNER JOIN vendedor v ON v.vendedor_id = e.vendedor INNER JOIN proveedor pr ON pr.proveedor_id = pd.proveedor_id
-		INNER JOIN producto pro ON pro.producto_id = ed.producto_id INNER JOIN productomarca pm ON pm.productomarca_id = pro.productomarca";
-		$where = "e.fecha BETWEEN '{$fecha_desde}' AND '{$fecha_hasta}' AND {$tipo_where}";
- 		$groupby = "ed.producto_id,e.cliente{$tipo_groupby} ORDER BY cl.razon_social ASC";
-		$egresos_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select,$groupby);
-
-		$array_temp = array();
-		$array_exportacion[] = $array_encabezados;
-		foreach ($egresos_collection as $clave=>$valor) {
-			switch ($tipo_busqueda) {
-			    case 1:
-							$campo = "";
-			        break;
-			    case 2:
-							$campo = $valor["MARCA"];
-			        break;
-			    case 3:
-							$campo = $valor["PROVEEDOR"];
-			        break;
-					case 4:
-					  	$campo = $valor["VENDEDOR"];
-			        break;
+				$suma_ingresos_hoy = $suma_ingresos_hoy + $egreso_importe_total;
 			}
-
-			$array_temp = array(
-							$valor["CODIGO"]
-						, $valor["PRODUCTO"]
-						, $valor["CANTIDAD"]
-						, $valor["CLIENTE"]
-						, $valor["NOMBRE_FANTASIA"]
-						, $campo);
-			$array_exportacion[] = $array_temp;
 		}
 
-		$array_exportacion[] = array('', '', '', '');
-		$array_exportacion[] = array('', '', '', '');
-		ExcelReport()->extraer_informe_conjunto($subtitulo, $array_exportacion);
-		exit;
+		//VENTAS DEL DÍA
+		$total_facturacion_hoy = $suma_ingresos_hoy - $suma_notacredito_hoy;
+
+		//PAGO PROVEEDORES
+		$select = "ROUND(SUM(CASE WHEN ccp.tipomovimientocuenta = 2 OR ccp.tipomovimientocuenta = 3 THEN ccp.importe ELSE 0 END),2) AS TSALIDA";
+		$from = "cuentacorrienteproveedor ccp";
+		$where = "ccp.fecha = '{$fecha_filtro}' AND ccp.ingresotipopago NOT IN (1,4)";
+		$egreso_cuentacorrienteproveedor_hoy = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
+		$egreso_cuentacorrienteproveedor_hoy = (is_array($egreso_cuentacorrienteproveedor_hoy)) ? $egreso_cuentacorrienteproveedor_hoy[0]['TSALIDA'] : 0;
+		$egreso_cuentacorrienteproveedor_hoy = (is_null($egreso_cuentacorrienteproveedor_hoy)) ? 0 : $egreso_cuentacorrienteproveedor_hoy;
+
+		$select = "ROUND(SUM(i.costo_total_iva),2) AS PROVCONT";
+		$from = "ingreso i";
+		$where = "i.fecha = '{$fecha_filtro}' AND i.condicionpago = 2";
+		$egreso_contadoproveedor_hoy = CollectorCondition()->get('Ingreso', $where, 4, $from, $select);
+		$egreso_contadoproveedor_hoy = (is_array($egreso_contadoproveedor_hoy)) ? $egreso_contadoproveedor_hoy[0]['PROVCONT'] : 0;
+		$egreso_contadoproveedor_hoy = (is_null($egreso_contadoproveedor_hoy)) ? 0 : $egreso_contadoproveedor_hoy;
+		$pago_proveedores = $egreso_cuentacorrienteproveedor_hoy + $egreso_contadoproveedor_hoy;
+
+		//DETALLE PAGO PROVEEDORES
+		$select = "p.razon_social AS RAZSOC, p.proveedor_id AS PID,
+				   ROUND(SUM(CASE WHEN ccp.tipomovimientocuenta = 2 OR ccp.tipomovimientocuenta = 3 THEN ccp.importe ELSE 0 END),2) AS TSALIDA,'{$fecha_filtro}' AS FECHA";
+		$from = "cuentacorrienteproveedor ccp INNER JOIN proveedor p ON ccp.proveedor_id = p.proveedor_id";
+		$where = "ccp.fecha = '{$fecha_filtro}' AND ccp.ingresotipopago != 1";
+		$groupby = "ccp.proveedor_id";
+		$detalle_cuentacorrienteproveedor_hoy = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select, $groupby);
+
+		$select = "p.razon_social AS RAZSOC, p.proveedor_id AS PID, ROUND(SUM(i.costo_total_iva),2) AS TSALIDA";
+		$from = "ingreso i INNER JOIN proveedor p ON i.proveedor = p.proveedor_id";
+		$where = "i.fecha = '{$fecha_filtro}' AND i.condicionpago = 2";
+		$groupby = "i.proveedor";
+		$detalle_contadoproveedor_hoy = CollectorCondition()->get('Ingreso', $where, 4, $from, $select, $groupby);
+
+		if (is_array($detalle_cuentacorrienteproveedor_hoy) AND !empty($detalle_cuentacorrienteproveedor_hoy)) {
+			$detalle_pagoproveedor = $detalle_cuentacorrienteproveedor_hoy;
+
+			if (is_array($detalle_contadoproveedor_hoy) AND !empty($detalle_contadoproveedor_hoy)) {
+				foreach ($detalle_pagoproveedor as $clave=>$valor) {
+					$temp_proveedor_id = $valor["PID"];
+					foreach ($detalle_contadoproveedor_hoy as $k=>$v) {
+						$proveedor_id = $v["PID"];
+						if ($temp_proveedor_id == $proveedor_id) {
+							$detalle_pagoproveedor[$clave]["TSALIDA"] = $detalle_pagoproveedor[$clave]["TSALIDA"] + $detalle_contadoproveedor_hoy[$k]["TSALIDA"];
+						} else {
+							$array_temp = array("PID"=>$valor["PID"],
+												"RAZSOC"=>$valor["RAZSOC"],
+												"TSALIDA"=>$valor["TSALIDA"]);
+							$detalle_pagoproveedor[] = $array_temp;
+						}
+					}
+				}
+			}
+		} else {
+			if (is_array($detalle_contadoproveedor_hoy) AND !empty($detalle_contadoproveedor_hoy)) {
+				$detalle_pagoproveedor = $detalle_contadoproveedor_hoy;
+			} else {
+				$detalle_pagoproveedor = array();
+			}
+		}
+
+		//PAGO COMISIONES
+		$select = "ROUND(SUM(valor_abonado),2) AS ECOMISION";
+		$from = "egresocomision ec";
+		$where = "ec.fecha = '{$fecha_filtro}' AND ec.estadocomision IN (2,3)";
+		$egreso_comision_hoy = CollectorCondition()->get('EgresoComision', $where, 4, $from, $select);
+		$egreso_comision_hoy = (is_array($egreso_comision_hoy)) ? $egreso_comision_hoy[0]['ECOMISION'] : 0;
+		$egreso_comision_hoy = (is_null($egreso_comision_hoy)) ? 0 : $egreso_comision_hoy;
+
+		//DETALLE COMISIONES
+		$select = "CONCAT(v.apellido,',',v.nombre) AS VENDEDOR,ROUND(SUM(ec.valor_abonado),2) AS VALOR,esc.denominacion AS ESTADO";
+		$from = "egresocomision ec  INNER JOIN egreso e ON e.egresocomision = ec.egresocomision_id INNER JOIN vendedor v ON v.vendedor_id = e.vendedor INNER JOIN estadocomision esc ON esc.estadocomision_id = ec.estadocomision";
+		$where = "ec.fecha = '{$fecha_filtro}' AND ec.estadocomision IN (2,3) GROUP BY e.vendedor";
+		$detalle_comision = CollectorCondition()->get('EgresoComision', $where, 4, $from, $select);
+
+		//GASTO DIARIO
+		$select = "ROUND(SUM(g.importe), 2) AS IMPORTETOTAL";
+		$from = "gasto g";
+		$where = "g.fecha = '{$fecha_filtro}' ";
+		$gasto_diario = CollectorCondition()->get('Gasto', $where, 4, $from, $select);
+		$gasto_diario = (is_array($gasto_diario)) ? $gasto_diario[0]['IMPORTETOTAL'] : 0;
+		$gasto_diario = (is_null($gasto_diario)) ? 0 : $gasto_diario;
+
+		//DETALLE GASTO DIARIO
+		$select = "gc.denominacion AS CATEGORIA,g.detalle AS DETALLE,ROUND(g.importe, 2) AS IMPORTETOTAL";
+		$from = "gasto g INNER JOIN gastocategoria gc on gc.gastocategoria_id = g.gastocategoria INNER JOIN gastosubcategoria gs on gs.gastosubcategoria_id = gc.gastosubcategoria";
+		$where = "g.fecha = '{$fecha_filtro}'";
+		$detalle_gasto_diario = CollectorCondition()->get('Gasto', $where, 4, $from, $select);
+
+		//LIQUIDACIONES
+		$select = "ROUND(SUM(s.monto), 2) AS IMPORTETOTAL";
+		$from = "salario s";
+		$where = "s.fecha = '{$fecha_filtro}' AND s.tipo_pago IN ('SALARIO', 'ADELANTO')";
+		$liquidacion = CollectorCondition()->get('Salario', $where, 4, $from, $select);
+		$liquidacion = (is_array($liquidacion)) ? $liquidacion[0]['IMPORTETOTAL'] : 0;
+		$liquidacion = (is_null($liquidacion)) ? 0 : $liquidacion;
+
+		//DETALLE LIQUIDACIONES
+		$select = "CONCAT(e.apellido, e.nombre) AS EMPLEADO, CONCAT('Desde ', date_format(s.desde, '%d/%m/%Y'), 'hasta el ', date_format(s.hasta, '%d/%m/%Y')) AS DETALLE, ROUND(s.monto, 2) AS IMPORTETOTAL";
+		$from = "salario s INNER JOIN empleado e on e.empleado_id = s.empleado";
+		$where = "s.fecha = '{$fecha_filtro}' AND s.tipo_pago IN ('SALARIO', 'ADELANTO')";
+		$detalle_liquidacion = CollectorCondition()->get('Salario', $where, 4, $from, $select);
+
+		//VEHICULOS
+		$select = "ROUND(SUM(vc.importe), 2) AS IMPORTETOTAL";
+		$from = "vehiculocombustible vc";
+		$where = "vc.fecha = '{$fecha_filtro}'";
+		$vehiculos = CollectorCondition()->get('VehiculoCombustible', $where, 4, $from, $select);
+		$vehiculos = (is_array($vehiculos)) ? $vehiculos[0]['IMPORTETOTAL'] : 0;
+		$vehiculos = (is_null($vehiculos)) ? 0 : $vehiculos;
+
+		//DETALLE VEHICULOS
+		$select = "v.denominacion AS DETALLE,ROUND(vc.importe, 2) AS IMPORTETOTAL";
+		$from = "vehiculocombustible vc INNER JOIN vehiculo v ON v.vehiculo_id = vc.vehiculo";
+		$where = "vc.fecha = '{$fecha_filtro}'";
+		$detalle_vehiculos = CollectorCondition()->get('VehiculoCombustible', $where, 4, $from, $select);
+
+		$calculo_cajadiaria = $this->calcula_cajadiaria();
+
+		$array_totales = array('{cobranza_contado}'=>$cobranza_contado,
+							   '{cobranza_cuentacorriente}'=>$cobranza_cuentacorriente,
+							   '{ventas}'=>$total_facturacion_hoy,
+							   '{pago_proveedores}'=>$pago_proveedores,
+							   '{pago_comisiones}'=>$egreso_comision_hoy,
+							   '{gasto_diario}'=>$gasto_diario,
+							   '{liquidacion}'=>$liquidacion,
+							   '{vehiculos}'=>$vehiculos,
+							   '{caja}'=>$calculo_cajadiaria,
+							   '{fecha}'=>$fecha_filtro);
+		$this->view->resumen_diario($array_totales, $detalle_pagoproveedor, $detalle_gasto_diario, $detalle_liquidacion, $detalle_vehiculos, $detalle_comision, 1);
 	}
 
+
 	// PANELES REPORTES
-	function reportes_productos() {
+	function panel_reportes_productos() {
 		SessionHandler()->check_session();
 		$user_level = $_SESSION["data-login-" . APP_ABREV]["usuario-nivel"];
     	$fecha_sys = strtotime(date('Y-m-d'));
@@ -2567,7 +2431,7 @@ class ReporteController {
 		$this->view->reportes_productos($sum_importe_producto, $sum_cantidad_producto, $vendedor_collection, $producto_collection, $productomarca_collection, $proveedor_collection, $user_level);
 	}
 
-	// REPORTES PRODUCTOS
+	// DESCARGAS REPORTES PRODUCTOS
 	function ajax_cobertura_marca($arg){
 		SessionHandler()->check_session();
 		
@@ -3136,7 +3000,7 @@ class ReporteController {
 		exit;
 	}
 
-	// REPORTES CLIENTES
+	// DESCARGAS REPORTES CLIENTES
 	function desc_importe_venta_cliente_vendedor_fecha() {
 		SessionHandler()->check_session();
 		require_once "tools/excelreport.php";
@@ -3217,7 +3081,7 @@ class ReporteController {
 		ExcelReport()->extraer_informe_conjunto($subtitulo, $array_exportacion);
 	}
 
-	// REPORTES GASTOS
+	// DESCARGAS REPORTES GASTOS
 	function desc_gastos_categoria_fecha() {
 		SessionHandler()->check_session();
 		require_once "tools/excelreport_tipo2.php";
@@ -3264,6 +3128,5 @@ class ReporteController {
         array_multisort($array_temp, $criterion, $collection);
         return $collection;
     }
-
 }
 ?>
