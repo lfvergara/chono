@@ -2175,8 +2175,22 @@ class ReporteController {
 	function resumen_diario() {
     	SessionHandler()->check_session();
     	$fecha_filtro = filter_input(INPUT_POST, 'fecha');
+    	
     	if (is_null($fecha_filtro) OR empty($fecha_filtro) OR $fecha_filtro == '' OR $fecha_filtro == 0) {
     		$fecha_filtro = date('Y-m-d');
+			$calculo_cajadiaria = $this->calcula_cajadiaria();
+    	} else {
+    		$select = "cd.caja AS CAJA";
+			$from = "cajadiaria cd";
+			$where = "cd.fecha = '{$fecha_filtro}' ORDER BY cd.fecha DESC LIMIT 1";
+			$cajadiaria = CollectorCondition()->get('CajaDiaria', $where, 4, $from, $select);
+			$cajadiaria = (is_array($cajadiaria) AND !empty($cajadiaria)) ? $cajadiaria[0]['CAJA'] : 0;
+			$cajadiaria = (is_null($cajadiaria)) ? 0 : $cajadiaria;
+			if ($cajadiaria != 0 AND !is_null($cajadiaria)) {
+				$calculo_cajadiaria = round($cajadiaria,2);
+			} else {
+				$calculo_cajadiaria = 0;
+			}
     	}
 
     	$select = "ROUND(SUM(e.importe_total),2) AS CONTADO";
@@ -2339,8 +2353,6 @@ class ReporteController {
 		$from = "vehiculocombustible vc INNER JOIN vehiculo v ON v.vehiculo_id = vc.vehiculo";
 		$where = "vc.fecha = '{$fecha_filtro}'";
 		$detalle_vehiculos = CollectorCondition()->get('VehiculoCombustible', $where, 4, $from, $select);
-
-		$calculo_cajadiaria = $this->calcula_cajadiaria();
 
 		$array_totales = array('{cobranza_contado}'=>$cobranza_contado,
 							   '{cobranza_cuentacorriente}'=>$cobranza_cuentacorriente,
