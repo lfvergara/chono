@@ -2167,9 +2167,9 @@ class ReporteController {
 			$from = "notacredito nc";
 			$where = "nc.egreso_id = {$egreso_id}";
 			$notacredito = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
-			print_r($notacredito);
 
 			if (is_array($notacredito) AND !empty($notacredito)) {
+				print_r($notacredito);
 				$notacredito_importe_total = $notacredito[0]['IMPTOT'];
 				$egreso_collection[$clave]['IMPTOT'] = round(($egreso_importe_total - $notacredito_importe_total), 2);
 			}
