@@ -2199,7 +2199,7 @@ class ReporteController {
 			$cobranza_total = $cobranza_total + $egreso_collection[$clave]['IMPTOT'];
 		}
 
-		$this->view->resumen_detalle_cobranza($egreso_collection, $cobranza_total, $fecha);
+		$this->view->resumen_detalle_cobranza($egreso_collection, $cobranza_total, $fecha, 'Contado');
 	}
 
 	function detalle_cobrador_cobranza($arg) {
