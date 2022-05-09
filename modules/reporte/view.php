@@ -290,6 +290,12 @@ class ReporteView extends View {
 		$gui_detalle_cobranza = file_get_contents("static/modules/reporte/tbl_resumen_detalle_cobranza.html");
 		$gui_detalle_cobranza = $this->render_regex_dict('TBL_COBRANZA', $gui_detalle_cobranza, $cobranza_collection);
 
+		if ($condicionpago == 'Contado') {
+			$url_referencia = 'egreso/consultar';
+		} else {
+			$url_referencia = 'cuentacorrientecliente/consultar';
+		}
+
 		$render = str_replace('{fecha}', $fecha, $gui);
 		$render = str_replace('{cobranza}', $cobranza_total, $render);
 		$render = str_replace('{condicionpago-denominacion}', $condicionpago, $render);
