@@ -2177,7 +2177,7 @@ class ReporteController {
 				if ($nuevo_valor_importe == 0) unset($egreso_collection[$clave]);
 			}
 			
-			$cobranza_total = $cobranza_total + $nuevo_valor_importe;
+			$cobranza_total = $cobranza_total + $egreso_collection[$clave]['IMPTOT'];
 		}
 
 		$this->view->resumen_detalle_cobranza($egreso_collection, $cobranza_total, $fecha);
