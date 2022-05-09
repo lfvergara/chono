@@ -2159,6 +2159,8 @@ class ReporteController {
 		$from = "egreso e INNER JOIN cliente cl ON e.cliente = cl.cliente_id INNER JOIN vendedor ve ON e.vendedor = ve.vendedor_id INNER JOIN egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
 		$where = "e.condicionpago = 2 AND ee.fecha = '{$fecha}' AND ee.estadoentrega = 4";
 		$egreso_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
+
+		$cobranza_total = 0;
 		foreach ($egreso_collection as $clave=>$valor) {
 			$egreso_id = $valor['EGRID'];
 			$egreso_importe_total = $valor['IMPTOT'];
@@ -2173,10 +2175,11 @@ class ReporteController {
 				$nuevo_valor_importe = round(($egreso_importe_total - $notacredito_importe_total), 2);
 				$egreso_collection[$clave]['IMPTOT'] = $nuevo_valor_importe;
 				if ($nuevo_valor_importe == 0) unset($egreso_collection[$clave]);
+				$cobranza_total = $cobranza_total + $nuevo_valor_importe;
 			}
 		}
 
-		$this->view->resumen_detalle_cobranza($egreso_collection, $fecha);
+		$this->view->resumen_detalle_cobranza($egreso_collection, $cobranza_total, $fecha);
 	}
 
 	function detalle_cobrador_cobranza($arg) {

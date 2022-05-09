@@ -285,12 +285,13 @@ class ReporteView extends View {
 		print $template;
 	}
 
-	function resumen_detalle_cobranza($egreso_collection, $fecha) {
+	function resumen_detalle_cobranza($egreso_collection, $cobranza_total, $fecha) {
 		$gui = file_get_contents("static/modules/reporte/resumen_detalle_cobranza.html");
 		$gui_detalle_cobranza = file_get_contents("static/modules/reporte/tbl_resumen_detalle_cobranza.html");
 		$gui_detalle_cobranza = $this->render_regex_dict('TBL_EGRESO', $gui_detalle_cobranza, $egreso_collection);
 
 		$render = str_replace('{fecha}', $fecha, $gui);
+		$render = str_replace('{cobranza}', $cobranza_total, $render);
 		$render = str_replace('{tbl_resumen_detalle_cobranza}', $gui_detalle_cobranza, $render);
 		$render = $this->render_breadcrumb($render);
 		$template = $this->render_template($render);
