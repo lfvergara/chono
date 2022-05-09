@@ -1984,7 +1984,7 @@ class ReporteController {
     	// COBRANZA CONTADO
     	$select = "e.egreso_id AS EGRID, CASE WHEN eafip.egresoafip_id IS NULL THEN CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE e.tipofactura = tf.tipofactura_id), ' ', LPAD(e.punto_venta, 4, 0), '-', LPAD(e.numero_factura, 8, 0)) ELSE CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE eafip.tipofactura = tf.tipofactura_id), ' ', LPAD(eafip.punto_venta, 4, 0), '-', LPAD(eafip.numero_factura, 8, 0)) END AS FACTURA, UPPER(cl.razon_social) AS CLIENTE, UPPER(CONCAT(ve.APELLIDO, ' ', ve.nombre)) AS VENDEDOR, ROUND(e.importe_total, 2) AS IMPTOT";
 		$from = "egreso e INNER JOIN cliente cl ON e.cliente = cl.cliente_id INNER JOIN vendedor ve ON e.vendedor = ve.vendedor_id INNER JOIN egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
-		$where = "e.condicionpago = 2 AND ee.fecha = '{$fecha}' AND ee.estadoentrega = 4";
+		$where = "e.condicionpago = 2 AND ee.fecha = '{$fecha_filtro}' AND ee.estadoentrega = 4";
 		$cobranzacontado_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
 
 		$cobranza_contado = 0;
