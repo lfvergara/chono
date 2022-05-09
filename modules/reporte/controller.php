@@ -2170,7 +2170,9 @@ class ReporteController {
 
 			if (is_array($notacredito) AND !empty($notacredito)) {
 				$notacredito_importe_total = $notacredito[0]['IMPTOT'];
-				$egreso_collection[$clave]['IMPTOT'] = round(($egreso_importe_total - $notacredito_importe_total), 2);
+				$nuevo_valor_importe = round(($egreso_importe_total - $notacredito_importe_total), 2);
+				$egreso_collection[$clave]['IMPTOT'] = $nuevo_valor_importe;
+				if ($nuevo_valor_importe == 0) unset($egreso_collection[$clave]);
 			}
 		}
 
