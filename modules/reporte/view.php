@@ -97,57 +97,6 @@ class ReporteView extends View {
 		print $template;
 	}
 
-	function resumen_diario($array_totales, $pagoproveedor_collection, $detalle_gasto_diario, $detalle_liquidacion, $detalle_vehiculos, $detalle_comision, $tipo_resumen_diario) {
-		if ($tipo_resumen_diario == 1) {
-			$gui = file_get_contents("static/modules/reporte/resumen_diario.html");
-		} else {
-			$gui = file_get_contents("static/modules/reporte/filtro_resumen_diario.html");
-		}
-
-		$gui_detalle_pagoproveedor = file_get_contents("static/modules/reporte/detalle_pagoproveedor.html");
-		$gui_detalle_pagoproveedor = $this->render_regex_dict('DETALLE_PAGOPROVEEDOR', $gui_detalle_pagoproveedor, $pagoproveedor_collection);
-
-		$gui_detalle_gasto_diario = file_get_contents("static/modules/reporte/detalle_gastodiario.html");
-		$gui_detalle_gasto_diario = $this->render_regex_dict('DETALLE_GASTODIARIO', $gui_detalle_gasto_diario, $detalle_gasto_diario);
-
-		$gui_detalle_liquidacion = file_get_contents("static/modules/reporte/detalle_liquidacion.html");
-		$gui_detalle_liquidacion = $this->render_regex_dict('DETALLE_LIQUIDACION', $gui_detalle_liquidacion, $detalle_liquidacion);
-
-		$gui_detalle_vehiculos = file_get_contents("static/modules/reporte/detalle_vehiculos.html");
-		$gui_detalle_vehiculos = $this->render_regex_dict('DETALLE_VEHICULOS', $gui_detalle_vehiculos, $detalle_vehiculos);
-
-		$gui_detalle_comision = file_get_contents("static/modules/reporte/detalle_comision.html");
-		$gui_detalle_comision = $this->render_regex_dict('DETALLE_COMISION', $gui_detalle_comision, $detalle_comision);
-
-		$render = $this->render($array_totales, $gui);
-		$render = str_replace('{detalle_pagoproveedor}', $gui_detalle_pagoproveedor, $render);
-		$render = str_replace('{detalle_gastosvarios}', $gui_detalle_gasto_diario, $render);
-		$render = str_replace('{detalle_liquidacion}', $gui_detalle_liquidacion, $render);
-		$render = str_replace('{detalle_vehiculos}', $gui_detalle_vehiculos, $render);
-		$render = str_replace('{detalle_comision}', $gui_detalle_comision, $render);
-		$render = $this->render_breadcrumb($render);
-		$template = $this->render_template($render);
-		print $template;
-	}
-
-	function detalle_cobrador_cobranza($cuentacorriente_collection, $obj_cobrador, $cobranza, $cobrador_id, $fecha) {
-		$gui = file_get_contents("static/modules/reporte/ver_detalle_cobrador_cobranza.html");
-
-		$gui_detalle_cobranza = file_get_contents("static/modules/reporte/tbl_detalle_cobrador_cobranza.html");
-		$gui_detalle_cobranza = $this->render_regex_dict('TBL_COBRADOR_COBRANZA', $gui_detalle_cobranza, $cuentacorriente_collection);
-
-		$obj_cobrador = $this->set_dict($obj_cobrador);
-
-		$render = str_replace('{cobranza}', $cobranza[0]['COBRANZA'], $gui);
-		$render = str_replace('{cobrador_id}', $cobrador_id, $render);
-		$render = str_replace('{fecha}', $fecha, $render);
-		$render = $this->render($obj_cobrador, $render);
-		$render = str_replace('{tbl_detalle_cobrador_cobranza}', $gui_detalle_cobranza, $render);
-		$render = $this->render_breadcrumb($render);
-		$template = $this->render_template($render);
-		print $template;
-	}
-
 	function formulario_cajadiaria_ajax($cajadiaria) {
 		$gui = file_get_contents("static/modules/reporte/formulario_cajadiaria_ajax.html");
 		$caja_enabled = ($cajadiaria == 0) ? '' : 'disabled';
@@ -311,7 +260,42 @@ class ReporteView extends View {
 		print $template;
 	}
 
-	
+	// PANELES RESÚMENES
+	function resumen_diario($array_totales, $pagoproveedor_collection, $detalle_gasto_diario, $detalle_liquidacion, $detalle_vehiculos, $detalle_comision) {
+		$gui = file_get_contents("static/modules/reporte/resumen_diario.html");		
+		$gui_detalle_pagoproveedor = file_get_contents("static/modules/reporte/detalle_pagoproveedor.html");
+		$gui_detalle_pagoproveedor = $this->render_regex_dict('DETALLE_PAGOPROVEEDOR', $gui_detalle_pagoproveedor, $pagoproveedor_collection);
+		$gui_detalle_gasto_diario = file_get_contents("static/modules/reporte/detalle_gastodiario.html");
+		$gui_detalle_gasto_diario = $this->render_regex_dict('DETALLE_GASTODIARIO', $gui_detalle_gasto_diario, $detalle_gasto_diario);
+		$gui_detalle_liquidacion = file_get_contents("static/modules/reporte/detalle_liquidacion.html");
+		$gui_detalle_liquidacion = $this->render_regex_dict('DETALLE_LIQUIDACION', $gui_detalle_liquidacion, $detalle_liquidacion);
+		$gui_detalle_vehiculos = file_get_contents("static/modules/reporte/detalle_vehiculos.html");
+		$gui_detalle_vehiculos = $this->render_regex_dict('DETALLE_VEHICULOS', $gui_detalle_vehiculos, $detalle_vehiculos);
+		$gui_detalle_comision = file_get_contents("static/modules/reporte/detalle_comision.html");
+		$gui_detalle_comision = $this->render_regex_dict('DETALLE_COMISION', $gui_detalle_comision, $detalle_comision);
+
+		$render = $this->render($array_totales, $gui);
+		$render = str_replace('{detalle_pagoproveedor}', $gui_detalle_pagoproveedor, $render);
+		$render = str_replace('{detalle_gastosvarios}', $gui_detalle_gasto_diario, $render);
+		$render = str_replace('{detalle_liquidacion}', $gui_detalle_liquidacion, $render);
+		$render = str_replace('{detalle_vehiculos}', $gui_detalle_vehiculos, $render);
+		$render = str_replace('{detalle_comision}', $gui_detalle_comision, $render);
+		$render = $this->render_breadcrumb($render);
+		$template = $this->render_template($render);
+		print $template;
+	}
+
+	function resumen_detalle_cobranza_contado($egreso_collection, $fecha) {
+		$gui = file_get_contents("static/modules/reporte/resumen_detalle_cobranza.html");
+		$gui_detalle_cobranza = file_get_contents("static/modules/reporte/tbl_resumen_detalle_cobranza.html");
+		$gui_detalle_cobranza = $this->render_regex_dict('TBL_EGRESO', $gui_detalle_cobranza, $egreso_collection);
+
+		$render = str_replace('{fecha}', $fecha, $gui);
+		$render = str_replace('{tbl_resumen_detalle_cobranza}', $gui_detalle_cobranza, $render);
+		$render = $this->render_breadcrumb($render);
+		$template = $this->render_template($render);
+		print $template;
+	}
 
 	//PANELES REPORTES
 	function reportes_productos($sum_importe_producto, $sum_cantidad_producto, $vendedor_collection, $producto_collection, $productomarca_collection, $proveedor_collection, $user_level) {
