@@ -2175,7 +2175,7 @@ class ReporteController {
 			}
 		}
 
-		$this->view->resumen_detalle_cobranza_contado($egreso_collection, $fecha);
+		$this->view->resumen_detalle_cobranza($egreso_collection, $fecha);
 	}
 
 	function detalle_cobrador_cobranza($arg) {
