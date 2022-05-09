@@ -2174,13 +2174,13 @@ class ReporteController {
 		SessionHandler()->check_session();
 		$fecha = $arg;
 
-		$select = "e.egreso_id AS EGRID, CASE WHEN eafip.egresoafip_id IS NULL THEN CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE e.tipofactura = tf.tipofactura_id), ' ', LPAD(e.punto_venta, 4, 0), '-', LPAD(e.numero_factura, 8, 0)) ELSE CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE eafip.tipofactura = tf.tipofactura_id), ' ', LPAD(eafip.punto_venta, 4, 0), '-', LPAD(eafip.numero_factura, 8, 0)) END AS FACTURA, UPPER(cl.razon_social) AS CLIENTE, UPPER(CONCAT(ve.APELLIDO, ' ', ve.nombre)) AS VENDEDOR, ROUND(e.importe_total, 2) AS IMPTOT";
+		$select = "e.egreso_id AS IDREF, CASE WHEN eafip.egresoafip_id IS NULL THEN CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE e.tipofactura = tf.tipofactura_id), ' ', LPAD(e.punto_venta, 4, 0), '-', LPAD(e.numero_factura, 8, 0)) ELSE CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE eafip.tipofactura = tf.tipofactura_id), ' ', LPAD(eafip.punto_venta, 4, 0), '-', LPAD(eafip.numero_factura, 8, 0)) END AS FACTURA, UPPER(cl.razon_social) AS CLIENTE, UPPER(CONCAT(ve.APELLIDO, ' ', ve.nombre)) AS VENDEDOR, ROUND(e.importe_total, 2) AS IMPTOT";
 		$from = "egreso e INNER JOIN cliente cl ON e.cliente = cl.cliente_id INNER JOIN vendedor ve ON e.vendedor = ve.vendedor_id INNER JOIN egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
 		$where = "e.condicionpago = 2 AND ee.fecha = '{$fecha}' AND ee.estadoentrega = 4";
-		$egreso_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
+		$cobranza_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
 
 		$cobranza_total = 0;
-		foreach ($egreso_collection as $clave=>$valor) {
+		foreach ($cobranza_collection as $clave=>$valor) {
 			$egreso_id = $valor['EGRID'];
 			$egreso_importe_total = $valor['IMPTOT'];
 
@@ -2192,37 +2192,29 @@ class ReporteController {
 			if (is_array($notacredito) AND !empty($notacredito)) {
 				$notacredito_importe_total = $notacredito[0]['IMPTOT'];
 				$nuevo_valor_importe = round(($egreso_importe_total - $notacredito_importe_total), 2);
-				$egreso_collection[$clave]['IMPTOT'] = $nuevo_valor_importe;
-				if ($nuevo_valor_importe == 0) unset($egreso_collection[$clave]);
+				$cobranza_collection[$clave]['IMPTOT'] = $nuevo_valor_importe;
+				if ($nuevo_valor_importe == 0) unset($cobranza_collection[$clave]);
 			}
 			
-			$cobranza_total = $cobranza_total + $egreso_collection[$clave]['IMPTOT'];
+			$cobranza_total = $cobranza_total + $cobranza_collection[$clave]['IMPTOT'];
 		}
 
-		$this->view->resumen_detalle_cobranza($egreso_collection, $cobranza_total, $fecha, 'Contado');
+		$this->view->resumen_detalle_cobranza($cobranza_collection, $cobranza_total, $fecha, 'Contado');
 	}
 
-	function detalle_cobrador_cobranza($arg) {
-		$args = explode("@", $arg);
-		$cobrador_id = $args[0];
-		$fecha = $args[1];
+	function resumen_detalle_cobranza_ctacte($arg) {
+		SessionHandler()->check_session();
+		$fecha = $arg;
 
-		$cm = new Cobrador();
-		$cm->cobrador_id = $cobrador_id;
-		$cm->get();
+		$select = "cl.cliente_id AS IDREF, CASE WHEN eafip.egresoafip_id IS NULL THEN CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE e.tipofactura = tf.tipofactura_id), ' ', LPAD(e.punto_venta, 4, 0), '-', LPAD(e.numero_factura, 8, 0)) ELSE CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE eafip.tipofactura = tf.tipofactura_id), ' ', LPAD(eafip.punto_venta, 4, 0), '-', LPAD(eafip.numero_factura, 8, 0)) END AS FACTURA, UPPER(cl.razon_social) AS CLIENTE, UPPER(CONCAT(ve.APELLIDO, ' ', ve.nombre)) AS VENDEDOR, round(ccc.ingreso, 2) AS IMPTOT";
+		$from = "cuentacorrientecliente ccc INNER JOIN egreso e ON ccc.egreso_id = e.egreso_id INNER JOIN cliente cl ON e.cliente = cl.cliente_id INNER JOIN vendedor ve ON e.vendedor = ve.vendedor_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
+		$where = "ccc.fecha = '{$fecha}' AND ccc.tipomovimientocuenta = 2";
+		$cobranza_collection = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
 
-		$select = "ROUND(SUM(ccc.ingreso), 2) AS COBRANZA";
-		$from = "cuentacorrientecliente ccc INNER JOIN cobrador c ON ccc.cobrador = c.cobrador_id";
-		$where = "ccc.fecha = '{$fecha}' AND ccc.tipomovimientocuenta = 2 AND c.cobrador_id = {$cobrador_id}";
-		$group_by = "ccc.cobrador";
-		$cobranza = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select, $group_by);
+		$cobranza_total = 0;
+		foreach ($cobranza_collection as $clave=>$valor) $cobranza_total = $cobranza_total + $cobranza_collection[$clave]['IMPTOT'];
 
-		$select = "ccc.referencia AS REFERENCIA, ccc.ingreso AS INGRESO, c.razon_social AS RAZSOC, c.nombre_fantasia AS NOMFAN";
-		$from = "cuentacorrientecliente ccc INNER JOIN cliente c ON ccc.cliente_id = c.cliente_id";
-		$where = "ccc.fecha = '{$fecha}' AND ccc.tipomovimientocuenta = 2 AND ccc.cobrador = {$cobrador_id}";
-		$cuentacorriente_collection = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
-
-		$this->view->detalle_cobrador_cobranza($cuentacorriente_collection, $cm, $cobranza, $cobrador_id, $fecha);
+		$this->view->resumen_detalle_cobranza($cobranza_collection, $cobranza_total, $fecha, 'Cta Cte Cliente');
 	}
 
 	// PANELES REPORTES
