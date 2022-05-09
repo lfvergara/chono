@@ -296,10 +296,10 @@ class ReporteView extends View {
 			$url_referencia = 'cuentacorrientecliente/consultar';
 		}
 
+		$gui_detalle_cobranza = str_replace('{url_referencia}', $url_referencia, $gui_detalle_cobranza);
 		$render = str_replace('{fecha}', $fecha, $gui);
 		$render = str_replace('{cobranza}', $cobranza_total, $render);
 		$render = str_replace('{condicionpago-denominacion}', $condicionpago, $render);
-		$render = str_replace('{url_referencia}', $url_referencia, $render);
 		$render = str_replace('{tbl_resumen_detalle_cobranza}', $gui_detalle_cobranza, $render);
 		$render = $this->render_breadcrumb($render);
 		$template = $this->render_template($render);
