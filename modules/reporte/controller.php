@@ -1981,12 +1981,31 @@ class ReporteController {
 			}
     	}
 
-    	$select = "ROUND(SUM(e.importe_total),2) AS CONTADO";
-		$from = "egreso e INNER JOIN egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id INNER JOIN estadoentrega esen ON ee.estadoentrega = esen.estadoentrega_id";
-		$where = "e.condicionpago = 2 AND ee.fecha = '{$fecha_filtro}' AND esen.estadoentrega_id = 4";
-		$sum_contado = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
-		$sum_contado = (is_array($sum_contado)) ? $sum_contado[0]['CONTADO'] : 0;
-		$cobranza_contado = (is_null($sum_contado)) ? 0 : $sum_contado;
+    	// COBRANZA CONTADO
+    	$select = "e.egreso_id AS EGRID, CASE WHEN eafip.egresoafip_id IS NULL THEN CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE e.tipofactura = tf.tipofactura_id), ' ', LPAD(e.punto_venta, 4, 0), '-', LPAD(e.numero_factura, 8, 0)) ELSE CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE eafip.tipofactura = tf.tipofactura_id), ' ', LPAD(eafip.punto_venta, 4, 0), '-', LPAD(eafip.numero_factura, 8, 0)) END AS FACTURA, UPPER(cl.razon_social) AS CLIENTE, UPPER(CONCAT(ve.APELLIDO, ' ', ve.nombre)) AS VENDEDOR, ROUND(e.importe_total, 2) AS IMPTOT";
+		$from = "egreso e INNER JOIN cliente cl ON e.cliente = cl.cliente_id INNER JOIN vendedor ve ON e.vendedor = ve.vendedor_id INNER JOIN egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
+		$where = "e.condicionpago = 2 AND ee.fecha = '{$fecha}' AND ee.estadoentrega = 4";
+		$egreso_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
+
+		$cobranza_contado = 0;
+		foreach ($egreso_collection as $clave=>$valor) {
+			$egreso_id = $valor['EGRID'];
+			$egreso_importe_total = $valor['IMPTOT'];
+
+			$select = "nc.importe_total AS IMPTOT";
+			$from = "notacredito nc";
+			$where = "nc.egreso_id = {$egreso_id}";
+			$notacredito = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
+
+			if (is_array($notacredito) AND !empty($notacredito)) {
+				$notacredito_importe_total = $notacredito[0]['IMPTOT'];
+				$nuevo_valor_importe = round(($egreso_importe_total - $notacredito_importe_total), 2);
+				$egreso_collection[$clave]['IMPTOT'] = $nuevo_valor_importe;
+				if ($nuevo_valor_importe == 0) unset($egreso_collection[$clave]);
+			}
+			
+			$cobranza_contado = $cobranza_contado + $egreso_collection[$clave]['IMPTOT'];
+		}
 		
 		$select = "ROUND(SUM(CASE WHEN ccc.tipomovimientocuenta = 2 OR ccc.tipomovimientocuenta = 3 THEN ccc.importe ELSE 0 END),2) AS TINGRESO";
 		$from = "cuentacorrientecliente ccc";
