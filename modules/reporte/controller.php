@@ -2169,12 +2169,10 @@ class ReporteController {
 			$notacredito = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
 
 			if (is_array($notacredito) AND !empty($notacredito)) {
-				print_r($notacredito);
 				$notacredito_importe_total = $notacredito[0]['IMPTOT'];
 				$egreso_collection[$clave]['IMPTOT'] = round(($egreso_importe_total - $notacredito_importe_total), 2);
 			}
 		}
-		exit;
 
 		$this->view->resumen_detalle_cobranza($egreso_collection, $fecha);
 	}
