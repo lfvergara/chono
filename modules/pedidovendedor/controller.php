@@ -532,7 +532,8 @@ class PedidoVendedorController {
 			$importe_final = round($importe_final, 2);
 
         	$pedidovendedordetalle_collection[$clave]['IMPORTE'] = $importe_final;
-        	$pedidovendedordetalle_collection[$clave]['VD'] = round($valor_descuento_recalculado, 2);
+        	$pedidovendedordetalle_collection[$clave]['VD'] = $valor_descuento_recalculado;
+        	$pedidovendedordetalle_collection[$clave]['VDTBL'] = round($valor_descuento_recalculado, 2);
 
         	$select = "MAX(s.stock_id) AS STOCK_ID";
 			$from = "stock s";
