@@ -483,7 +483,7 @@ class PedidoVendedorController {
 		}
 
 		$cliente_collection = CollectorCondition()->get('Cliente', $where, 4, $from, $select);
-		$select = "pvd.codigo_producto AS CODIGO, CONCAT(pm.denominacion, ' ', p.denominacion) AS DESCRIPCION, pvd.cantidad AS CANTIDAD, pu.denominacion AS UNIDAD, pvd.descuento AS DESCUENTO, p.costo AS COSTO, pvd.importe AS IMPORTE, pvd.pedidovendedordetalle_id AS PEDVENID, pvd.producto_id AS PRODUCTO, round(pvd.valor_descuento, 2) AS VD, p.iva AS IVA, p.porcentaje_ganancia AS VALGAN, p.flete AS FLETE";
+		$select = "pvd.codigo_producto AS CODIGO, CONCAT(pm.denominacion, ' ', p.denominacion) AS DESCRIPCION, pvd.cantidad AS CANTIDAD, pu.denominacion AS UNIDAD, pvd.descuento AS DESCUENTO, p.costo AS COSTO, pvd.importe AS IMPORTE, pvd.pedidovendedordetalle_id AS PEDVENID, pvd.producto_id AS PRODUCTO, pvd.valor_descuento AS VD, p.iva AS IVA, p.porcentaje_ganancia AS VALGAN, p.flete AS FLETE";
 		$from = "pedidovendedordetalle pvd INNER JOIN producto p ON pvd.producto_id = p.producto_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id";
 		$where = "pvd.pedidovendedor_id = {$arg}";
 		$pedidovendedordetalle_collection = CollectorCondition()->get('PedidoVendedorDetalle', $where, 4, $from, $select);
