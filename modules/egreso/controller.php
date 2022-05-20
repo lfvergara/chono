@@ -172,10 +172,10 @@ class EgresoController {
 		$infocontacto_collection = $this->model->cliente->infocontacto_collection;
 
 		if (is_array($infocontacto_collection) AND !empty($infocontacto_collection)) {
-			foreach ($infocontacto_collection as $infocontacto) if ($infocontacto->denominacion == 'Teléfono') $telefono = $infocontacto->valor;
+			foreach ($infocontacto_collection as $infocontacto) if ($infocontacto->denominacion == 'Celular') $telefono = $infocontacto->valor;
 
 			if (!empty($telefono)) {
-				$this->model->cliente->telefono = 'Tel: ' . $telefono;
+				$this->model->cliente->telefono = ' - Cel: ' . $telefono;
 			} else {
 				$this->model->cliente->telefono = '';
 			}
