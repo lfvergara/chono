@@ -333,7 +333,9 @@
                 var tdTblDescripcion = document.createElement("td");
                 var tdTblCantidad = document.createElement("td");
                 tdTblCantidad.setAttribute("id", "idTdCantidad_" + producto_id);
-                var tdTblCosto = document.createElement("td");
+                var tdTblCosto = document.createElement("td");                
+                var tdTblPorcentajeDescuento = document.createElement("td");
+                tdTblPorcentajeDescuento.setAttribute("id", "idTdPorcentajeDescuento_" + producto_id);
                 var tdTblImporteDescuento = document.createElement("td");
                 tdTblImporteDescuento.setAttribute("id", "idTdImporteDescuento_" + producto_id);
                 var tdTblTotal = document.createElement("td");
@@ -351,12 +353,14 @@
                 var txtDescripcion = document.createTextNode(descripcion); 
                 var txtCantidad = document.createTextNode(cantidad); 
                 var txtCosto = document.createTextNode(" $" + costo); 
+                var txtPorcentajeDescuento = document.createTextNode(descuento + '%'); 
                 var txtImporteDescuento = document.createTextNode('$' + importe_descuento); 
                 var txtCostoTotal = document.createTextNode(" $" + costo_total); 
                 
                 tdTblDescripcion.appendChild(txtDescripcion);
                 tdTblCantidad.appendChild(txtCantidad);
                 tdTblCosto.appendChild(txtCosto);
+                tdTblPorcentajeDescuento.appendChild(txtPorcentajeDescuento);
                 tdTblImporteDescuento.appendChild(txtImporteDescuento);
                 tdTblTotal.appendChild(txtCostoTotal);
                 tdTblBtnQuitar.appendChild(btnQuitar);
@@ -364,6 +368,7 @@
                 trTblProducto.appendChild(tdTblDescripcion);
                 trTblProducto.appendChild(tdTblCantidad);
                 trTblProducto.appendChild(tdTblCosto);
+                trTblProducto.appendChild(tdTblPorcentajeDescuento);
                 trTblProducto.appendChild(tdTblImporteDescuento);
                 trTblProducto.appendChild(tdTblTotal);
                 trTblProducto.appendChild(tdTblBtnQuitar);
@@ -447,6 +452,9 @@
             } else {
                 var td_cantidad = document.getElementById('idTdCantidad_' + producto_id);
                 var old_cantidad = td_cantidad.innerHTML;
+                
+                var td_porcentajedescuento = document.getElementById('idTdPorcentajeDescuento_' + producto_id);
+                var old_porcentajedescuento = td_porcentajedescuento.innerHTML;
                 var td_importedescuento = document.getElementById('idTdImporteDescuento_' + producto_id);
                 var old_importedescuento = td_importedescuento.innerHTML;
                 var td_total = document.getElementById('idTdTotal_' + producto_id);
@@ -456,6 +464,7 @@
                 
                 //SUSTITUYE EN TABLA POR NUEVOS VALORES
                 td_cantidad.innerHTML = cantidad;
+                td_porcentajedescuento.innerHTML = descuento + '%';
                 td_importedescuento.innerHTML = '$' + importe_descuento;
                 td_total.innerHTML = '$' + costo_total;
 
