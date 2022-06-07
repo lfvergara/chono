@@ -1,14 +1,14 @@
 <?php
 require_once "modules/productomarca/model.php";
 require_once "modules/productocategoria/model.php";
+require_once "modules/productofamilia/model.php";
 require_once "modules/productounidad/model.php";
 require_once "modules/proveedor/model.php";
 
 
 class Producto extends StandardObject {
 	
-	function __construct(ProductoMarca $productomarca=NULL, ProductoCategoria $productocategoria=NULL, 
-                         ProductoUnidad $productounidad=NULL) {
+	function __construct(ProductoMarca $productomarca=NULL, ProductoCategoria $productocategoria=NULL, ProductoFamilia $productofamilia=NULL, ProductoUnidad $productounidad=NULL) {
 		$this->producto_id = 0;
 		$this->codigo = 0;
 		$this->denominacion = '';
