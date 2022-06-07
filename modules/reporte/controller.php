@@ -593,6 +593,252 @@ class ReporteController {
 		$this->view->rentabilidad($array_valores, $egreso_collection, $ganancia_descuento_vendedor);
 	}
 
+	function filtra_rentabilidad() {
+    	SessionHandler()->check_session();
+		$desde = filter_input(INPUT_POST, 'desde');
+		$hasta = filter_input(INPUT_POST, 'hasta');
+		$periodo = "desde el {$desde} hasta el {$hasta}";
+		
+		// FACTURACIÓN Y NOTAS DE CRÉDITO
+		$select = "e.egreso_id AS EGRESO_ID, e.importe_total AS IMPORTETOTAL";
+		$from = "egreso e INNER JOIN cliente cl ON e.cliente = cl.cliente_id INNER JOIN vendedor ve ON e.vendedor = ve.vendedor_id INNER JOIN condicionpago cp ON e.condicionpago = cp.condicionpago_id INNER JOIN condicioniva ci ON e.condicioniva = ci.condicioniva_id INNER JOIN egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id INNER JOIN estadoentrega ese ON ee.estadoentrega = ese.estadoentrega_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
+		$where = "e.fecha BETWEEN '{$desde}' AND '{$hasta}' AND cl.impacto_ganancia = 1";
+		$egresos_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
+
+		$ventas = 0;
+		$suma_notacredito = 0;
+		$facturacion = 0;
+		$egreso_id_array = array();
+		if (is_array($egresos_collection) AND !empty($egresos_collection)) {
+			foreach ($egresos_collection as $clave=>$valor) {
+				$egreso_importe_total = $egresos_collection[$clave]['IMPORTETOTAL'];
+				$egreso_id = $valor['EGRESO_ID'];
+
+				$select = "nc.importe_total AS IMPORTETOTAL";
+				$from = "notacredito nc";
+				$where = "nc.egreso_id = {$egreso_id}";
+				$notacredito = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
+
+				if (is_array($notacredito) AND !empty($notacredito)) {
+					$importe_notacredito = $notacredito[0]['IMPORTETOTAL'];
+					$suma_notacredito = $suma_notacredito + $importe_notacredito;
+				}
+
+				$ventas = $ventas + $egreso_importe_total;
+				if(!in_array($egreso_id, $egreso_id_array)) $egreso_id_array[] = $egreso_id;
+			}
+		}
+		
+		$facturacion = $ventas - $suma_notacredito;
+		$egreso_ids = implode(',', $egreso_id_array);
+
+		// GANANCIA
+		$select = "ROUND(SUM(ed.valor_ganancia),2) AS GANANCIA";
+		$from = "egreso e INNER JOIN egresodetalle ed ON e.egreso_id = ed.egreso_id INNER JOIN cliente c ON e.cliente = c.cliente_id";
+		$where = "e.egreso_id IN ({$egreso_ids}) AND c.impacto_ganancia = 1";
+		$ganancia = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
+		$ganancia = (is_array($ganancia) AND !empty($ganancia)) ? $ganancia[0]['GANANCIA'] : 0;
+		$ganancia = (is_null($ganancia)) ? 0 : $ganancia;
+
+		//GANANCIA NOTAS DE CREDITO
+		$select = "ROUND(SUM(ncd.valor_ganancia),2) AS GANANCIA";
+		$from = "notacredito nc INNER JOIN notacreditodetalle ncd ON nc.notacredito_id = ncd.notacredito_id INNER JOIN egreso e ON nc.egreso_id = e.egreso_id INNER JOIN cliente c ON e.cliente = c.cliente_id";
+		$where = "e.egreso_id IN ({$egreso_ids}) AND c.impacto_ganancia = 1";
+		$ganancia_notacredito = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
+		$ganancia_notacredito = (is_array($ganancia_notacredito) AND !empty($ganancia_notacredito)) ? $ganancia_notacredito[0]['GANANCIA'] : 0;
+		$ganancia_notacredito = (is_null($ganancia_notacredito)) ? 0 : $ganancia_notacredito;
+
+		//SALARIO
+		$select = "ROUND(SUM(s.monto), 2) AS TOTAL";
+		$from = "salario s";
+		$where = "s.fecha BETWEEN '{$desde}' AND '{$hasta}' AND s.tipo_pago IN ('SALARIO', 'ADELANTO')";
+		$salario = CollectorCondition()->get('Salario', $where, 4, $from, $select);
+		$salario = (is_array($salario) AND !empty($salario)) ? $salario[0]['TOTAL'] : 0;
+		$salario = (is_null($salario)) ? 0 : $salario;
+
+		//GASTOS
+		$select = "ROUND(SUM(g.importe), 2) AS IMPORTETOTAL";
+		$from = "gasto g INNER JOIN gastocategoria gc ON gc.gastocategoria_id = g.gastocategoria INNER JOIN gastosubcategoria gsc ON gsc.gastosubcategoria_id = gc.gastosubcategoria";
+		$where = "g.fecha BETWEEN '{$desde}' AND '{$hasta}'";
+		$gastos = CollectorCondition()->get('Gasto', $where, 4, $from, $select);
+		$gastos = (is_array($gastos)) ? $gastos[0]['IMPORTETOTAL'] : 0;
+		$gastos = (is_null($gastos)) ? 0 : $gastos;
+
+		//COMBUSTIBLE
+		$select = "ROUND(SUM(vc.importe), 2) AS TOTAL";
+		$from = "vehiculocombustible vc";
+		$where = "vc.fecha BETWEEN '{$desde}' AND '{$hasta}'";
+		$combustible = CollectorCondition()->get('VehiculoCombustible', $where, 4, $from, $select);
+		$combustible = (is_array($combustible) AND !empty($combustible)) ? $combustible[0]['TOTAL'] : 0;
+		$combustible = (is_null($combustible)) ? 0 : $combustible;
+
+		//COMISION
+		$select = "ROUND(SUM(valor_abonado),2) AS ECOMISION";
+		$from = "egresocomision ec INNER JOIN egreso e ON ec.egresocomision_id = e.egresocomision";
+		$where = "ec.estadocomision IN (2,3) AND e.egreso_id IN ({$egreso_ids})";
+		$comision = CollectorCondition()->get('EgresoComision', $where, 4, $from, $select);
+		$comision = (is_array($comision)) ? $comision[0]['ECOMISION'] : 0;
+		$comision = (is_null($comision)) ? 0 : $comision;
+
+		$ganancia_real = $ganancia - $ganancia_notacredito;
+		$porcentaje_ganancia = $ganancia_real * 100 / $facturacion;
+
+		$rentabilidad = $ganancia_real - $salario - $gastos - $combustible - $comision;
+		$porcentaje_rentabilidad = $rentabilidad * 100 / $facturacion;
+		$array_valores = array('{ganancia}'=>$ganancia,
+							   '{ganancia_notacredito}'=>$ganancia_notacredito,
+							   '{ventas}'=>$ventas,
+							   '{facturacion}'=>$facturacion,
+							   '{notacredito}'=>$suma_notacredito,
+							   '{salario}'=>$salario,
+							   '{gastos}'=>$gastos,
+							   '{combustible}'=>$combustible,
+							   '{comision}'=>$comision,
+							   '{ganancia_real}'=>$ganancia_real,
+							   '{porcentaje_ganancia}'=>$porcentaje_ganancia,
+							   '{rentabilidad}'=>$rentabilidad,
+							   '{porcentaje_rentabilidad}'=>$porcentaje_rentabilidad);
+
+		foreach ($array_valores as $clave=>$valor) $array_valores[$clave] = number_format($valor, 2, ',', '.');
+		$array_valores['{desde}'] = $desde;
+		$array_valores['{hasta}'] = $hasta;
+
+		// VENTAS
+		$select = "e.egreso_id AS EGRESO_ID, UPPER(cl.razon_social) AS CLIENTE, FORMAT(e.importe_total, 2,'de_DE') AS IMPORTETOTAL, UPPER(CONCAT(ve.APELLIDO, ' ', ve.nombre)) AS VENDEDOR, CASE WHEN eafip.egresoafip_id IS NULL THEN CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE e.tipofactura = tf.tipofactura_id), ' ', LPAD(e.punto_venta, 4, 0), '-', LPAD(e.numero_factura, 8, 0)) ELSE CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE eafip.tipofactura = tf.tipofactura_id), ' ', LPAD(eafip.punto_venta, 4, 0), '-', LPAD(eafip.numero_factura, 8, 0)) END AS FACTURA";
+		$from = "egreso e INNER JOIN cliente cl ON e.cliente = cl.cliente_id INNER JOIN vendedor ve ON e.vendedor = ve.vendedor_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
+		$where = "e.egreso_id IN ({$egreso_ids}) AND cl.impacto_ganancia = 1 ORDER BY e.fecha DESC";
+		$egreso_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
+
+		//GANANCIA Y DESCUENTOS POR VENDEDOR
+		$select = "v.vendedor_id AS VENID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, SUM(ed.valor_ganancia) AS VALGAN, SUM(ed.valor_descuento) AS VALDES";
+		$from = "egreso e INNER JOIN egresodetalle ed ON e.egreso_id = ed.egreso_id INNER JOIN cliente c ON e.cliente = c.cliente_id INNER JOIN vendedor v ON e.vendedor = v.vendedor_id";
+		$where = "e.egreso_id IN ({$egreso_ids}) AND c.impacto_ganancia = 1";
+		$groupby = "v.vendedor_id";
+		$ganancia_descuento_vendedor = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $groupby);
+		$ganancia_descuento_vendedor = (is_array($ganancia_descuento_vendedor) AND !empty($ganancia_descuento_vendedor)) ? $ganancia_descuento_vendedor : array();
+
+		//FACTURACION POR VENDEDOR
+		$select = "v.vendedor_id AS VENID, SUM(e.importe_total) AS IMPFAC";
+		$from = "egreso e INNER JOIN cliente c ON e.cliente = c.cliente_id INNER JOIN vendedor v ON e.vendedor = v.vendedor_id";
+		$where = "e.egreso_id IN ({$egreso_ids}) AND c.impacto_ganancia = 1";
+		$groupby = "v.vendedor_id";
+		$facturacion_vendedor = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $groupby);
+		$facturacion_vendedor = (is_array($facturacion_vendedor) AND !empty($facturacion_vendedor)) ? $facturacion_vendedor : array();
+
+		//NOTAS CREDITO POR VENDEDOR
+		$select = "v.vendedor_id AS VENID, SUM(nc.importe_total) AS IMPNOT";
+		$from = "notacredito nc INNER JOIN egreso e ON nc.egreso_id = e.egreso_id INNER JOIN cliente c ON e.cliente = c.cliente_id INNER JOIN vendedor v ON e.vendedor = v.vendedor_id";
+		$where = "e.egreso_id IN ({$egreso_ids}) AND c.impacto_ganancia = 1";
+		$groupby = "v.vendedor_id";
+		$notacredito_vendedor = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select, $groupby);
+		$notacredito_vendedor = (is_array($notacredito_vendedor) AND !empty($notacredito_vendedor)) ? $notacredito_vendedor : array();
+		foreach ($notacredito_vendedor as $notacredito) {
+			$notcre_vendedor_id = $notacredito['VENID'];
+			$valor_notacredito = $notacredito['IMPNOT'];
+
+			foreach ($ganancia_descuento_vendedor as $clave=>$valor) {
+				$gan_vendedor_id = $valor['VENID'];
+				if ($notcre_vendedor_id == $gan_vendedor_id) {
+					$ganancia_descuento_vendedor[$clave]['IMPNOT'] = $valor_notacredito;
+				}
+			}
+		}
+		
+		foreach ($facturacion_vendedor as $facturacion) {
+			$fact_vendedor_id = $facturacion['VENID'];
+			$valor_facturacion = $facturacion['IMPFAC'];
+
+			foreach ($ganancia_descuento_vendedor as $clave=>$valor) {
+				$gan_vendedor_id = $valor['VENID'];
+				$valor_notacredito = $valor['IMPNOT'];
+				if ($fact_vendedor_id == $gan_vendedor_id) {
+					$valor_facturacion = $valor_facturacion - $valor_notacredito;
+					$porcentaje_ganancia = $valor['VALGAN'] * 100 / $valor_facturacion;
+					$porcentaje_descuento = $valor['VALDES'] * 100 / $valor_facturacion;
+					$ganancia_descuento_vendedor[$clave]['IMPFAC'] = number_format($valor_facturacion, 2, ',', '.');
+					$ganancia_descuento_vendedor[$clave]['VALGAN'] = number_format($valor['VALGAN'], 2, ',', '.');
+					$ganancia_descuento_vendedor[$clave]['VALDES'] = number_format($valor['VALDES'], 2, ',', '.');
+					$ganancia_descuento_vendedor[$clave]['PORGAN'] = number_format($porcentaje_ganancia, 2, ',', '.');
+					$ganancia_descuento_vendedor[$clave]['PORDES'] = number_format($porcentaje_descuento, 2, ',', '.');
+				}
+			}
+		}
+
+		$this->view->rentabilidad($array_valores, $egreso_collection, $ganancia_descuento_vendedor);
+	}
+
+	function traer_venta_ajax($arg) {
+		SessionHandler()->check_session();
+		$egreso_id = $arg;
+		$em = new Egreso();
+		$em->egreso_id = $egreso_id;
+		$em->get();
+		$importe_total = $em->importe_total;
+		$select = "eafip.punto_venta AS PUNTO_VENTA, eafip.numero_factura AS NUMERO_FACTURA, tf.nomenclatura AS TIPOFACTURA, eafip.cae AS CAE, eafip.vencimiento AS FVENCIMIENTO, eafip.fecha AS FECHA, tf.tipofactura_id AS TF_ID";
+		$from = "egresoafip eafip INNER JOIN tipofactura tf ON eafip.tipofactura = tf.tipofactura_id";
+		$where = "eafip.egreso_id = {$egreso_id}";
+		$egresoafip = CollectorCondition()->get('EgresoAfip', $where, 4, $from, $select);
+
+		if (is_array($egresoafip)) {
+			$egresoafip = $egresoafip[0];
+			$tipofactura_id = $egresoafip['TF_ID'];
+			$tfm = new TipoFactura();
+			$tfm->tipofactura_id = $tipofactura_id;
+			$tfm->get();
+
+			$em->punto_venta = $egresoafip['PUNTO_VENTA'];
+			$em->numero_factura = $egresoafip['NUMERO_FACTURA'];
+			$em->fecha = $egresoafip['FECHA'];
+			$em->tipofactura = $tfm;
+		}
+
+		$tipofactura = $em->tipofactura->tipofactura_id;
+		$select = "ed.codigo_producto AS CODIGO, ed.descripcion_producto AS DESCRIPCION, ed.cantidad AS CANTIDAD, pu.denominacion AS UNIDAD, ed.descuento AS DESCUENTO, ed.valor_descuento AS VD, ed.costo_producto AS PVP, ed.neto_producto AS COSTO, ed.importe AS IMPORTE, ed.iva AS IVA, ed.flete_producto AS FLETE, ed.valor_ganancia AS VALGAN";
+		$from = "egresodetalle ed INNER JOIN producto p ON ed.producto_id = p.producto_id INNER JOIN
+				 productounidad pu ON p.productounidad = pu.productounidad_id";
+		$where = "ed.egreso_id = {$egreso_id}";
+		$egresodetalle_collection = CollectorCondition()->get('EgresoDetalle', $where, 4, $from, $select);
+
+		$ganancia_total = 0;
+		foreach ($egresodetalle_collection as $clave=>$valor) {
+			$costo = $valor['COSTO'];
+			$flete = $valor['FLETE'];
+			$iva = $valor['IVA'];
+			$venta = $valor['PVP'];
+			$valor_ganancia = $valor['VALGAN'];
+			$cantidad = $valor['CANTIDAD'];
+			$ganancia_total = $ganancia_total + $valor_ganancia;
+			$descuento = $valor['VD'];
+
+			if ($tipofactura == 2) {
+				$valor_neto = $costo + ($flete * $costo / 100);
+				$valor_neto = $valor_neto + ($iva * $valor_neto / 100);
+			} else {
+				$valor_neto = $costo + ($flete * $costo / 100);
+			}
+			
+			$valor_ganancia = $venta - $valor_neto;
+			$porcentaje_ganancia = $valor_ganancia * 100 / $venta;
+			$importe_neto = $valor_neto * $cantidad;
+			$importe_venta = $venta * $cantidad;
+			$egresodetalle_collection[$clave]['NETO'] = number_format($valor_neto, 2, ',', '.');
+			$egresodetalle_collection[$clave]['IMPNET'] =  number_format($importe_neto, 2, ',', '.');
+			$egresodetalle_collection[$clave]['IMPVEN'] = number_format($importe_venta, 2, ',', '.');
+			$egresodetalle_collection[$clave]['VALGANREC'] = number_format(($valor_ganancia * $cantidad), 2, ',', '.');
+			$egresodetalle_collection[$clave]['PORGAN'] = number_format($porcentaje_ganancia, 2, ',', '.');
+			$egresodetalle_collection[$clave]['COSTO'] = number_format($valor['COSTO'], 2, ',', '.');
+			$egresodetalle_collection[$clave]['PVP'] = number_format($valor['PVP'], 2, ',', '.');
+			$egresodetalle_collection[$clave]['VALGAN'] = number_format($valor['VALGAN'], 2, ',', '.');
+			$egresodetalle_collection[$clave]['VD'] = number_format($valor['VD'], 2, ',', '.');
+		}
+
+		$porcentaje_ganancia_total = $ganancia_total * 100 / $importe_total;
+		$array_valores = array('{ganancia_total}'=>number_format($ganancia_total, 2, ',', '.'), 
+							   '{porcentaje_ganancia_total}'=>number_format($porcentaje_ganancia_total, 2, ',', '.'));
+		
+		$this->view->traer_venta_ajax($em, $egresodetalle_collection, $array_valores);
+	}
+
 	function vdr_panel() {
     	SessionHandler()->check_session();
     	$fecha_sys = date('Y-m-d');
