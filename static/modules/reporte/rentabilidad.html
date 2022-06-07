@@ -11,14 +11,10 @@
 <div class="col-md-12 col-sm-12 col-xs-12">
     <h4 style="margin-left: 0; margin-top: 0px;">Control de Rentabilidad: Desde el {desde} hasta el {hasta}</h4>
 </div>
-<div class="col-md-4 col-sm-12 col-xs-12">
+<div class="col-md-3 col-sm-12 col-xs-12">
     <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%;">
         <div class="x_title" style="padding-left: 2%;">
             <h2><i class="fa fa-bar-chart"></i>&nbsp;&nbsp; Resúmen Facturación</h2>
-            <ul class="nav navbar-right panel_toolbox hidden-print">
-                <li><a class="collapse-link hidden-print"><i class="fa fa-chevron-up"></i></a></li>
-                <li><a class="close-link hidden-print"><i class="fa fa-close"></i></a></li>
-            </ul>
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -43,10 +39,6 @@
     <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%;">
         <div class="x_title" style="padding-left: 2%;">
             <h2><i class="fa fa-bar-chart"></i>&nbsp;&nbsp; Resúmen Ganancia Facturación</h2>
-            <ul class="nav navbar-right panel_toolbox hidden-print">
-                <li><a class="collapse-link hidden-print"><i class="fa fa-chevron-up"></i></a></li>
-                <li><a class="close-link hidden-print"><i class="fa fa-close"></i></a></li>
-            </ul>
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -75,10 +67,6 @@
     <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%;">
         <div class="x_title" style="padding-left: 2%;">
             <h2><i class="fa fa-bar-chart"></i>&nbsp;&nbsp; Resúmen Egresos</h2>
-            <ul class="nav navbar-right panel_toolbox hidden-print">
-                <li><a class="collapse-link hidden-print"><i class="fa fa-chevron-up"></i></a></li>
-                <li><a class="close-link hidden-print"><i class="fa fa-close"></i></a></li>
-            </ul>
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -107,10 +95,6 @@
     <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%;">
         <div class="x_title" style="padding-left: 2%;">
             <h2><i class="fa fa-bar-chart"></i>&nbsp;&nbsp; Rentabilidad</h2>
-            <ul class="nav navbar-right panel_toolbox hidden-print">
-                <li><a class="collapse-link hidden-print"><i class="fa fa-chevron-up"></i></a></li>
-                <li><a class="close-link hidden-print"><i class="fa fa-close"></i></a></li>
-            </ul>
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -129,7 +113,34 @@
         </div>
     </div>        
 </div>    
-<div class="col-md-8 col-sm-12 col-xs-12" id="div_tbl_egresos">
+<div class="col-md-7 col-sm-12 col-xs-12" id="div_tbl_ganancia_descuento_vendedor">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><i class="fa fa-table"></i>&nbsp;&nbsp; Ganancias y descuentos por vendedor</h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <table id="tbl_ganancia" class="table table-striped table-bordered">
+                <thead>
+                    <tr style="font-size: 12px;">
+                        <th>Vendedor</th>
+                        <th>Facturación</th>
+                        <th>Ganancia</th>
+                        <th>Descuento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {tbl_ganancia_descuento_vendedor}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="col-md-7 col-sm-12 col-xs-12" id="div_tbl_egresos" style="display: none;">
     <div class="x_panel">
         <div class="x_title">
             <h2><i class="fa fa-table"></i>&nbsp;&nbsp; Ventas del mes</h2>
@@ -158,7 +169,38 @@
         </div>
     </div>
 </div>  
-<div class="col-md-8 col-sm-12 col-xs-12" id="div_visor" style="display: none;"></div>  
+<div class="col-md-7 col-sm-12 col-xs-12" id="div_visor" style="display: none;"></div>  
+<div class="col-md-2 col-sm-12 col-xs-12" id="div_filtros">
+    <button type="button" class="btn btn-dark" style="width: 100%; font-size: 14px; margin-bottom: 10px;" onclick="verPanel();">
+        <i class="fa fa-usd"></i> Ver Rentabilidad por Vendedor
+    </button>
+    <button type="button" class="btn btn-dark" style="width: 100%; font-size: 14px;" onclick="verListaEgresos();">
+        <i class="fa fa-usd"></i> Ver Ventas
+    </button>
+    <div class="x_panel hidden-print" style="padding-left: 0px; padding-right: 0px; margin-bottom: 2%;">
+        <div class="x_title" style="padding-left: 2%;">
+            <h2><i class="fa fa-search"></i>&nbsp;&nbsp; Filtra Rentabilidad</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class=" form">
+                <form class="form" id="formulario_guardar" method="post" action="{url_app}/reporte/filtra_rentabilidad">
+                    <div class="form-group">
+                        <label>Desde</label>
+                        <input type="date" class="form-control" id="desde" name="desde" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hasta</label>
+                        <input type="date" class="form-control" id="hasta" name="hasta" required>
+                    </div>
+                    <div class="form-group col-lg-12" style="margin-top: 2%;" align="right">
+                        <button class="btn btn-xs btn-primary" type="submit" style="width: 100%"> <i class="fa fa-eye"></i> Filtrar </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Datatables -->
 <script src="{url_static}vendors/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="{url_static}vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
@@ -167,6 +209,13 @@
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
         $('#tbl_egreso').dataTable( {
+            "aaSorting": [[ 0, "asc" ]]
+          , "iDisplayLength":10
+        } );
+    } );
+
+    $(document).ready(function() {
+        $('#tbl_ganancia').dataTable( {
             "aaSorting": [[ 0, "asc" ]]
           , "iDisplayLength":10
         } );
@@ -182,11 +231,19 @@
 
         document.getElementById('div_visor').innerHTML = traer_venta_ajax;
         document.getElementById('div_visor').style.display = 'block';
+        document.getElementById('div_tbl_ganancia_descuento_vendedor').style.display = 'none';
         document.getElementById('div_tbl_egresos').style.display = 'none';
+    }
+
+    function verPanel() {
+        document.getElementById('div_visor').style.display = 'none';
+        document.getElementById('div_tbl_ganancia_descuento_vendedor').style.display = 'block';
+        document.getElementById('div_tbl_egresos').style.display = 'none';   
     }
 
     function verListaEgresos() {
         document.getElementById('div_visor').style.display = 'none';
+        document.getElementById('div_tbl_ganancia_descuento_vendedor').style.display = 'none';
         document.getElementById('div_tbl_egresos').style.display = 'block';   
     }
 </script>

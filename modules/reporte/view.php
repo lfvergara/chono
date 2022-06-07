@@ -86,6 +86,21 @@ class ReporteView extends View {
 		print $template;
 	}
 
+	function rentabilidad($array_valores, $egreso_collection, $ganancia_descuento_vendedor) {
+		$gui = file_get_contents("static/modules/reporte/rentabilidad.html");
+		$gui_tbl_egreso = file_get_contents("static/modules/reporte/tbl_egreso.html");
+		$gui_tbl_egreso = $this->render_regex_dict('TBL_EGRESO', $gui_tbl_egreso, $egreso_collection);
+		$gui_tbl_ganancia_descuento_vendedor = file_get_contents("static/modules/reporte/tbl_ganancia_descuento_vendedor.html");
+		$gui_tbl_ganancia_descuento_vendedor = $this->render_regex_dict('TBL_GANANCIA', $gui_tbl_ganancia_descuento_vendedor, $ganancia_descuento_vendedor);
+
+		$render = str_replace('{tbl_egreso}', $gui_tbl_egreso, $gui);
+		$render = str_replace('{tbl_ganancia_descuento_vendedor}', $gui_tbl_ganancia_descuento_vendedor, $render);
+		$render = $this->render($array_valores, $render);
+		$render = $this->render_breadcrumb($render);
+		$template = $this->render_template($render);
+		print $template;
+	}
+
 	function vdr_panel($pedidovendedor_collection, $array_totales) {
 		$gui = file_get_contents("static/modules/reporte/vdr_panel.html");
 		$tbl_pedidovendedor_array = file_get_contents("static/modules/pedidovendedor/tbl_small_pedidovendedor_array.html");
