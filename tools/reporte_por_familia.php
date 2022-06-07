@@ -1,5 +1,5 @@
 <?php
-require_once "common/libs/PHPExcel/PHPExcel.php";
+require_once "common/libs/PHPExcel/Classes/PHPExcel.php";
 
 
 class ExcelReport extends View {
