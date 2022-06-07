@@ -23,8 +23,8 @@ class ProductoController {
 
 	function listar() {
 		SessionHandler()->check_session();
-		$select = "p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, p.flete AS FLETE, ROUND(p.costo, 2) as COSTO, p.iva AS IVA, p.stock_ideal AS STIDEAL, p.porcentaje_ganancia AS GANANCIA, p.descuento AS DESCUENTO, p.stock_minimo AS STMINIMO, p.producto_id AS PRODUCTO_ID, ROUND(((p.costo * p.descuento)/100),2) AS VALOR_DESC, ROUND((p.costo - ((p.costo * p.descuento)/100)),2) AS CD, ROUND(((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100),2) AS VALOR_IVA, ROUND((((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100) + (p.costo - ((p.costo * p.descuento)/100))),2) AS COIV, ROUND((((p.costo + (p.costo * p.flete / 100)) * p.iva / 100) + (p.costo + (p.costo * p.flete /100))),2) AS COFLE, ROUND(((((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100) + (p.costo - ((p.costo * p.descuento)/100))) * p.porcentaje_ganancia / 100),2) AS VALOR_GANANCIA, ROUND((((((p.costo + ((p.costo * p.flete)/100)) * p.iva / 100) + (p.costo + ((p.costo * p.flete)/100))) * p.porcentaje_ganancia / 100) + (((p.costo + ((p.costo * p.flete)/100)) * p.iva / 100) + (p.costo + ((p.costo * p.flete)/100)))),2) AS VALOR_VENTA";
-		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
+		$select = "p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, pf.denominacion AS FAMILIA, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, p.flete AS FLETE, ROUND(p.costo, 2) as COSTO, p.iva AS IVA, p.stock_ideal AS STIDEAL, p.porcentaje_ganancia AS GANANCIA, p.descuento AS DESCUENTO, p.stock_minimo AS STMINIMO, p.producto_id AS PRODUCTO_ID, ROUND(((p.costo * p.descuento)/100),2) AS VALOR_DESC, ROUND((p.costo - ((p.costo * p.descuento)/100)),2) AS CD, ROUND(((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100),2) AS VALOR_IVA, ROUND((((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100) + (p.costo - ((p.costo * p.descuento)/100))),2) AS COIV, ROUND((((p.costo + (p.costo * p.flete / 100)) * p.iva / 100) + (p.costo + (p.costo * p.flete /100))),2) AS COFLE, ROUND(((((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100) + (p.costo - ((p.costo * p.descuento)/100))) * p.porcentaje_ganancia / 100),2) AS VALOR_GANANCIA, ROUND((((((p.costo + ((p.costo * p.flete)/100)) * p.iva / 100) + (p.costo + ((p.costo * p.flete)/100))) * p.porcentaje_ganancia / 100) + (((p.costo + ((p.costo * p.flete)/100)) * p.iva / 100) + (p.costo + ((p.costo * p.flete)/100)))),2) AS VALOR_VENTA";
+		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id INNER JOIN productofamilia pf ON p.productofamilia = pf.productofamilia_id";
 		$where = "p.oculto = 0";
 		$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select);
 
@@ -42,16 +42,16 @@ class ProductoController {
 	
 }
 	function ocultos() {
-		$select = "p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, p.flete AS FLETE, ROUND(p.costo, 2) as COSTO, p.iva AS IVA, p.stock_ideal AS STIDEAL, p.porcentaje_ganancia AS GANANCIA, p.descuento AS DESCUENTO, p.stock_minimo AS STMINIMO, p.producto_id AS PRODUCTO_ID, ROUND(((p.costo * p.descuento)/100),2) AS VALOR_DESC, ROUND((p.costo - ((p.costo * p.descuento)/100)),2) AS CD, ROUND(((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100),2) AS VALOR_IVA, ROUND((((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100) + (p.costo - ((p.costo * p.descuento)/100))),2) AS COIV, ROUND((((p.costo + (p.costo * p.flete / 100)) * p.iva / 100) + (p.costo + (p.costo * p.flete /100))),2) AS COFLE, ROUND(((((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100) + (p.costo - ((p.costo * p.descuento)/100))) * p.porcentaje_ganancia / 100),2) AS VALOR_GANANCIA, ROUND((((((p.costo + ((p.costo * p.flete)/100)) * p.iva / 100) + (p.costo + ((p.costo * p.flete)/100))) * p.porcentaje_ganancia / 100) + (((p.costo + ((p.costo * p.flete)/100)) * p.iva / 100) + (p.costo + ((p.costo * p.flete)/100)))),2) AS VALOR_VENTA";
-		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
+		$select = "p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, pf.denominacion AS FAMILIA, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, p.flete AS FLETE, ROUND(p.costo, 2) as COSTO, p.iva AS IVA, p.stock_ideal AS STIDEAL, p.porcentaje_ganancia AS GANANCIA, p.descuento AS DESCUENTO, p.stock_minimo AS STMINIMO, p.producto_id AS PRODUCTO_ID, ROUND(((p.costo * p.descuento)/100),2) AS VALOR_DESC, ROUND((p.costo - ((p.costo * p.descuento)/100)),2) AS CD, ROUND(((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100),2) AS VALOR_IVA, ROUND((((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100) + (p.costo - ((p.costo * p.descuento)/100))),2) AS COIV, ROUND((((p.costo + (p.costo * p.flete / 100)) * p.iva / 100) + (p.costo + (p.costo * p.flete /100))),2) AS COFLE, ROUND(((((p.costo - ((p.costo * p.descuento)/100)) * p.iva / 100) + (p.costo - ((p.costo * p.descuento)/100))) * p.porcentaje_ganancia / 100),2) AS VALOR_GANANCIA, ROUND((((((p.costo + ((p.costo * p.flete)/100)) * p.iva / 100) + (p.costo + ((p.costo * p.flete)/100))) * p.porcentaje_ganancia / 100) + (((p.costo + ((p.costo * p.flete)/100)) * p.iva / 100) + (p.costo + ((p.costo * p.flete)/100)))),2) AS VALOR_VENTA";
+		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id INNER JOIN productofamilia pf ON p.productofamilia = pf.productofamilia_id";
 		$where = "p.oculto = 1";
 		$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select);
 		$this->view->ocultos($producto_collection);
 	}
 
 	function lista_precio() {
-		$select = "p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, p.costo as COSTO, p.producto_id AS PRODUCTO_ID, p.precio_venta AS VALOR_VENTA, p.iva AS IVA, p.porcentaje_ganancia AS GANANCIA";
-		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
+		$select = "p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, pf.denominacion AS FAMILIA, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, p.costo as COSTO, p.producto_id AS PRODUCTO_ID, p.precio_venta AS VALOR_VENTA, p.iva AS IVA, p.porcentaje_ganancia AS GANANCIA";
+		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id INNER JOIN productofamilia pf ON p.productofamilia = pf.productofamilia_id";
 		$where = "p.oculto = 0";
 		$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select);
 
@@ -69,8 +69,8 @@ class ProductoController {
 	}
 
 	function vdr_lista_precio() {
-		$select = "p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, p.producto_id AS PRODUCTO_ID, pm.denominacion AS PROMAR, p.precio_venta AS VALOR_VENTA";
-		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
+		$select = "p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, pf.denominacion AS FAMILIA, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, p.producto_id AS PRODUCTO_ID, pm.denominacion AS PROMAR, p.precio_venta AS VALOR_VENTA";
+		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id INNER JOIN productofamilia pf ON p.productofamilia = pf.productofamilia_id";
 		$where = "p.oculto = 0";
 		$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select);
 
@@ -83,21 +83,21 @@ class ProductoController {
 
 		$filtro_consulta = filter_input(INPUT_POST, 'filtro');
 
-		$select = "DISTINCT p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, pm.denominacion AS MARCA, p.denominacion AS DENOMINACION, p.producto_id AS PRODUCTO_ID, p.precio_venta AS VALOR_VENTA";
+		$select = "DISTINCT p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, pf.denominacion AS FAMILIA, pm.denominacion AS MARCA, p.denominacion AS DENOMINACION, p.producto_id AS PRODUCTO_ID, p.precio_venta AS VALOR_VENTA";
 
 		switch ($filtro_consulta) {
 			case 1:
 
 				$proveedor_id = filter_input(INPUT_POST, "proveedor");
-				$from = "productodetalle pd, producto p, productocategoria pc, productomarca pm, productounidad pu";
+				$from = "productodetalle pd, producto p, productocategoria pc, productomarca pm, productounidad pu, productofamilia pf";
 				if ($proveedor_id == 'all') {
-					$where = "p.oculto = 0 AND p.productocategoria = pc.productocategoria_id AND p.productomarca = pm.productomarca_id AND p.productounidad = pu.productounidad_id AND p.producto_id = pd.producto_id ORDER BY pm.denominacion ASC, p.denominacion ASC";
+					$where = "p.oculto = 0 AND p.productocategoria = pc.productocategoria_id AND p.productomarca = pm.productomarca_id AND  p.productofamilia = pf.productofamilia_id AND p.productounidad = pu.productounidad_id AND p.producto_id = pd.producto_id ORDER BY pm.denominacion ASC, p.denominacion ASC";
 					$obj_denominacion = 'TODOS';
 				} else {
 					$pm = new Proveedor();
 					$pm->proveedor_id = $proveedor_id;
 					$pm->get();
-					$where = "p.oculto = 0 AND p.productocategoria = pc.productocategoria_id AND p.productomarca = pm.productomarca_id AND p.productounidad = pu.productounidad_id AND p.producto_id = pd.producto_id AND pd.productodetalle_id IN (SELECT MAX(sq.productodetalle_id) FROM productodetalle sq WHERE sq.proveedor_id = {$proveedor_id} GROUP BY sq.producto_id) ORDER BY pm.denominacion ASC, p.denominacion ASC";
+					$where = "p.oculto = 0 AND p.productocategoria = pc.productocategoria_id AND p.productomarca = pm.productomarca_id AND p.productofamilia = pf.productofamilia_id AND p.productounidad = pu.productounidad_id AND p.producto_id = pd.producto_id AND pd.productodetalle_id IN (SELECT MAX(sq.productodetalle_id) FROM productodetalle sq WHERE sq.proveedor_id = {$proveedor_id} GROUP BY sq.producto_id) ORDER BY pm.denominacion ASC, p.denominacion ASC";
 					$obj_denominacion = $pm->razon_social;
 				}
 
@@ -106,7 +106,7 @@ class ProductoController {
 			case 2:
 				$productomarca_id = filter_input(INPUT_POST, "productomarca");
 				if ($productomarca_id == 'all') {
-					$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
+					$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id INNER JOIN productofamilia pf ON p.productofamilia = pf.productofamilia_id";
 					$where = "p.oculto = 0 ORDER BY pm.denominacion ASC, p.denominacion ASC";
 					$obj_denominacion = 'TODAS';
 					$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select);
@@ -114,7 +114,7 @@ class ProductoController {
 					$pm = new ProductoMarca();
 					$pm->productomarca_id = $productomarca_id;
 					$pm->get();
-					$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
+					$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id INNER JOIN productofamilia pf ON p.productofamilia = pf.productofamilia_id";
 					$where = "p.oculto = 0  AND pm.productomarca_id = {$productomarca_id} ORDER BY pm.denominacion ASC, p.denominacion ASC";
 					$obj_denominacion = $pm->denominacion;
 					$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select);
@@ -122,7 +122,7 @@ class ProductoController {
 
 				break;
 			case 3:
-				$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
+				$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id INNER JOIN productofamilia pf ON p.productofamilia = pf.productofamilia_id";
 				$where = "p.oculto = 0 ORDER BY pm.denominacion ASC, p.denominacion ASC";
 				$obj_denominacion = 'TODOS';
 				$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select);
@@ -153,6 +153,7 @@ class ProductoController {
 		$productomarca_collection = Collector()->get('ProductoMarca');
 		$productocategoria_collection = Collector()->get('ProductoCategoria');
 		$productounidad_collection = Collector()->get('ProductoUnidad');
+		$productofamilia_collection = Collector()->get('ProductoFamilia');
 		$proveedor_collection = Collector()->get('Proveedor');
 
 		foreach ($productomarca_collection as $clave=>$valor) {
@@ -172,7 +173,7 @@ class ProductoController {
 		}
 
 
-		$this->view->agregar($productomarca_collection, $productocategoria_collection , $productounidad_collection, $proveedor_collection);
+		$this->view->agregar($productomarca_collection, $productocategoria_collection, $productofamilia_collection, $productounidad_collection, $proveedor_collection);
 	}
 
 	function editar($arg) {
@@ -189,6 +190,7 @@ class ProductoController {
 		$productomarca_collection = Collector()->get('ProductoMarca');
 		$productocategoria_collection = Collector()->get('ProductoCategoria');
 		$productounidad_collection = Collector()->get('ProductoUnidad');
+		$productofamilia_collection = Collector()->get('ProductoFamilia');
 		$proveedor_collection = Collector()->get('Proveedor');
 
 		foreach ($productomarca_collection as $clave=>$valor) {
@@ -203,7 +205,7 @@ class ProductoController {
 			if ($valor->oculto == 1) unset($productounidad_collection[$clave]);
 		}
 
-		$this->view->editar($productomarca_collection, $productocategoria_collection , $productounidad_collection, $productodetalle_collection, $proveedor_collection, $this->model);
+		$this->view->editar($productomarca_collection, $productocategoria_collection, $productofamilia_collection, $productounidad_collection, $productodetalle_collection, $proveedor_collection, $this->model);
 	}
 
 	function consultar($arg) {
@@ -249,6 +251,7 @@ class ProductoController {
 		$this->model->detalle = filter_input(INPUT_POST, 'detalle');
 		$this->model->productomarca = filter_input(INPUT_POST, 'productomarca');
 		$this->model->productocategoria = filter_input(INPUT_POST, 'productocategoria');
+		$this->model->productofamilia = filter_input(INPUT_POST, 'productofamilia');
 		$this->model->productounidad = filter_input(INPUT_POST, 'productounidad');
 		$this->model->save();
 		$producto_id = $this->model->producto_id;
@@ -301,6 +304,7 @@ class ProductoController {
 		$this->model->detalle = filter_input(INPUT_POST, 'detalle');
 		$this->model->productomarca = filter_input(INPUT_POST, 'productomarca');
 		$this->model->productocategoria = filter_input(INPUT_POST, 'productocategoria');
+		$this->model->productofamilia = filter_input(INPUT_POST, 'productofamilia');
 		$this->model->productounidad = filter_input(INPUT_POST, 'productounidad');
 		$this->model->save();
 		header("Location: " . URL_APP . "/producto/listar");
@@ -387,8 +391,8 @@ class ProductoController {
 
 	function buscar() {
 		$buscar = filter_input(INPUT_POST, 'buscar');
-		$select = "p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, p.costo as COSTO, p.producto_id AS PRODUCTO_ID, p.precio_venta AS VALOR_VENTA, p.iva AS IVA, p.porcentaje_ganancia AS GANANCIA";
-		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
+		$select = "p.codigo AS CODIGO, pc.denominacion AS CATEGORIA, pf.denominacion AS FAMILIA, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, p.costo as COSTO, p.producto_id AS PRODUCTO_ID, p.precio_venta AS VALOR_VENTA, p.iva AS IVA, p.porcentaje_ganancia AS GANANCIA";
+		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id INNER JOIN productofamilia pf ON p.productofamilia = pf.productofamilia_id";
 		$where = "p.denominacion LIKE '%{$buscar}%' OR pm.denominacion LIKE '%{$buscar}%' OR pc.denominacion LIKE '%{$buscar}%'";
 		$groupby = "p.producto_id";
 		$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select, $groupby);

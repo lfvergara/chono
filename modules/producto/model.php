@@ -33,6 +33,7 @@ class Producto extends StandardObject {
         $this->detalle = '';
         $this->productomarca = $productomarca;
         $this->productocategoria = $productocategoria;
+        $this->productofamilia = $productofamilia;
         $this->productounidad = $productounidad;
 	}
 }
