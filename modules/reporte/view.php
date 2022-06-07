@@ -101,6 +101,36 @@ class ReporteView extends View {
 		print $template;
 	}
 
+	function traer_venta_ajax($obj_egreso, $egresodetalle_collection, $array_valores) {
+		$gui = file_get_contents("static/modules/reporte/control_egreso_ajax.html");
+		$gui_tbl_egresodetalle = file_get_contents("static/modules/reporte/tbl_egresodetalle_rentabilidad.html");
+		$gui_tbl_egresodetalle = $this->render_regex_dict('TBL_EGRESODETALLE', $gui_tbl_egresodetalle, $egresodetalle_collection);
+
+		$obj_cliente = $obj_egreso->cliente;
+		$obj_vendedor = $obj_egreso->vendedor;
+		unset($obj_cliente->infocontacto_collection, $obj_cliente->vendedor, $obj_vendedor->infocontacto_collection, $obj_cliente->flete, $obj_egreso->egresoentrega, $obj_egreso->cliente, $obj_egreso->vendedor);
+		$obj_egreso->punto_venta = str_pad($obj_egreso->punto_venta, 4, '0', STR_PAD_LEFT);
+		$obj_egreso->numero_factura = str_pad($obj_egreso->numero_factura, 8, '0', STR_PAD_LEFT);
+		$tipofactura = $obj_egreso->tipofactura->tipofactura_id;
+		$obj_egreso = $this->set_dict($obj_egreso);
+		$obj_cliente = $this->set_dict($obj_cliente);
+		$obj_vendedor = $this->set_dict($obj_vendedor);
+
+		if ($tipofactura == 2) {
+			$gui_referencia_calculos_rentabilidad = file_get_contents("static/modules/reporte/referencia_calculos_rentabilidad_r.html");
+		} else {
+			$gui_referencia_calculos_rentabilidad = file_get_contents("static/modules/reporte/referencia_calculos_rentabilidad_ab.html");
+		}
+		
+		$render = str_replace('{tbl_egresodetalle_rentabilidad}', $gui_tbl_egresodetalle, $gui);
+		$render = str_replace('{referencia_calculos_rentabilidad}', $gui_referencia_calculos_rentabilidad, $render);
+		$render = $this->render($obj_egreso, $render);
+		$render = $this->render($obj_cliente, $render);
+		$render = $this->render($obj_vendedor, $render);
+		$render = $this->render($array_valores, $render);
+		print $render;
+	}
+
 	function vdr_panel($pedidovendedor_collection, $array_totales) {
 		$gui = file_get_contents("static/modules/reporte/vdr_panel.html");
 		$tbl_pedidovendedor_array = file_get_contents("static/modules/pedidovendedor/tbl_small_pedidovendedor_array.html");
