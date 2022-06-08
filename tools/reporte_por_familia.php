@@ -42,6 +42,7 @@ class ExcelReport extends View {
     }
 
 
+    print_r($objPHPExcel);exit;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setShowGridlines(false)
                 ->mergeCells("B1:E1")
@@ -55,7 +56,6 @@ class ExcelReport extends View {
     $breack_row_temp = '';
     $breack_row_ant = '';
     $color_temp = 'second_info_style';
-    print_r($objPHPExcel);exit;
     foreach ($array_exportacion as $registro) {
       foreach ($registro as $clave=>$valor) {
         $color = $registro[1];
