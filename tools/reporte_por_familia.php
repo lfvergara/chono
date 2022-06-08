@@ -50,8 +50,6 @@ class ExcelReport extends View {
                 ->setCellValue("F1", $fechaReporte)
                 ->mergeCells("B2:{$ultimaLetraPosicion}2")
                 ->setCellValue("B2", $subtitulo);
-    //print_r($objPHPExcel);exit;
-
     $l = 4;
     $breack_row_temp = '';
     $breack_row_ant = '';
@@ -94,7 +92,7 @@ class ExcelReport extends View {
     header('Content-Disposition: attachment;filename="infDHTordo.xlsx"');
     header('Cache-Control: max-age=0');
 
-    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+    //$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
     $objWriter->save('php://output');
   }
 
