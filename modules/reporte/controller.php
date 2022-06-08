@@ -3456,11 +3456,12 @@ class ReporteController {
 			$arreglo = array();
 			foreach ($array as $valor) {
 				$arreglo[] = $valor;
-				$arreglo[] = '';
-				$arreglo[] = '';
-				$arreglo[] = '';
-				$arreglo[] = '';
 			}
+
+			$arreglo[] = '';
+			$arreglo[] = '';
+			$arreglo[] = '';
+			$arreglo[] = '';
 
 			$array_exportacion[] = $arreglo;
 		}
