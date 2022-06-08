@@ -3430,6 +3430,10 @@ class ReporteController {
 				$array["{$familia}"] = 0;
 			}
 
+			$array[] = '';
+			$array[] = '';
+			$array[] = '';
+			$array[] = '';
 			$array_temp[] = $array;
 		}
 
@@ -3446,11 +3450,6 @@ class ReporteController {
 					$array_temp[$clave][$temp_familia] = $cantidad;
 				}
 			}
-
-			$array_temp[$clave] = '';
-			$array_temp[$clave] = '';
-			$array_temp[$clave] = '';
-			$array_temp[$clave] = '';
 		}
 
 		array_unshift($array_familias, 'VENDEDOR');
