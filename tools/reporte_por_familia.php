@@ -55,6 +55,7 @@ class ExcelReport extends View {
     $breack_row_temp = '';
     $breack_row_ant = '';
     $color_temp = 'second_info_style';
+    print_r($objPHPExcel);exit;
     foreach ($array_exportacion as $registro) {
       foreach ($registro as $clave=>$valor) {
         $color = $registro[1];
@@ -67,7 +68,6 @@ class ExcelReport extends View {
 
       $l++;
     }
-    print_r($objPHPExcel);exit;
 
     $celdas_titulos = "B3:{$ultimaLetraPosicion}3";
     $celdas_informacion = "B4:{$ultimaLetraPosicion}".($l-1);
