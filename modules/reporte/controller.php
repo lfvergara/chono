@@ -1755,7 +1755,6 @@ class ReporteController {
 		$cajadiaria = $cdm->caja;
 		$fecha_cajadiaria = $cdm->fecha;
 
-
 		$select = "e.egreso_id AS EGRID, ROUND(e.importe_total, 2) AS IMPTOT";
 		$from = "egreso e INNER JOIN egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id";
 		$where = "e.condicionpago = 2 AND ee.fecha = '{$fecha_sys}' AND ee.estadoentrega = 4";
