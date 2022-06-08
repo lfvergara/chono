@@ -1,3 +1,4 @@
+ob_start();
 <?php
 require_once "common/libs/PHPExcel/Classes/PHPExcel.php";
 
@@ -41,15 +42,15 @@ class ExcelReport extends View {
       }
     }
 
-
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setShowGridlines(false)
                 ->mergeCells("B1:E1")
-                //->mergeCells("F1:{$ultimaLetraPosicion}1")
+                ->mergeCells("F1:{$ultimaLetraPosicion}1")
                 ->setCellValue("B1", $tituloReporte)
                 ->setCellValue("F1", $fechaReporte)
                 ->mergeCells("B2:{$ultimaLetraPosicion}2")
                 ->setCellValue("B2", $subtitulo);
+
     $l = 4;
     $breack_row_temp = '';
     $breack_row_ant = '';
@@ -92,7 +93,9 @@ class ExcelReport extends View {
     header('Content-Disposition: attachment;filename="infDHTordo.xlsx"');
     header('Cache-Control: max-age=0');
 
-    //$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+    file_put_contents('depuracion.txt', ob_get_contents());
+    ob_end_clean();
     $objWriter->save('php://output');
   }
 
