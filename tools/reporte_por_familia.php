@@ -41,6 +41,7 @@ class ExcelReport extends View {
       }
     }
 
+
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setShowGridlines(false)
                 ->mergeCells("B1:E1")
@@ -66,6 +67,7 @@ class ExcelReport extends View {
 
       $l++;
     }
+    print_r($objPHPExcel);exit;
 
     $celdas_titulos = "B3:{$ultimaLetraPosicion}3";
     $celdas_informacion = "B4:{$ultimaLetraPosicion}".($l-1);
