@@ -3462,7 +3462,7 @@ class ReporteController {
 		}
 		
 		$subtitulo = "Reporte por familia del {$desde} al {$hasta}";
-		print_r($array_exportacion);exit;
+		//print_r($array_exportacion);exit;
 		ExcelReport()->extraer_informe_conjunto($subtitulo, $array_exportacion);
 		exit;
 		
