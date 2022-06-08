@@ -50,7 +50,7 @@ class ExcelReport extends View {
                 ->setCellValue("F1", $fechaReporte)
                 ->mergeCells("B2:{$ultimaLetraPosicion}2")
                 ->setCellValue("B2", $subtitulo);
-    print_r($objPHPExcel);exit;
+    //print_r($objPHPExcel);exit;
 
     $l = 4;
     $breack_row_temp = '';
