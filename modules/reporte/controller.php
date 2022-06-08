@@ -3446,6 +3446,11 @@ class ReporteController {
 					$array_temp[$clave][$temp_familia] = $cantidad;
 				}
 			}
+
+			$array_temp[$clave] = '';
+			$array_temp[$clave] = '';
+			$array_temp[$clave] = '';
+			$array_temp[$clave] = '';
 		}
 
 		array_unshift($array_familias, 'VENDEDOR');
