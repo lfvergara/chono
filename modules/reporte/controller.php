@@ -3430,10 +3430,6 @@ class ReporteController {
 				$array["{$familia}"] = 0;
 			}
 
-			$array[] = '';
-			$array[] = '';
-			$array[] = '';
-			$array[] = '';
 			$array_temp[] = $array;
 		}
 
@@ -3461,11 +3457,6 @@ class ReporteController {
 			foreach ($array as $valor) {
 				$arreglo[] = $valor;
 			}
-
-			$arreglo[] = '';
-			$arreglo[] = '';
-			$arreglo[] = '';
-			$arreglo[] = '';
 
 			$array_exportacion[] = $arreglo;
 		}
