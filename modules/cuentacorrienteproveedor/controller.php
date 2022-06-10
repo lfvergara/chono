@@ -119,6 +119,23 @@ class CuentaCorrienteProveedorController {
 						$btn_movimiento_id = '#';
 					}
 					break;
+				case 4:
+					$select = "cpd.creditoproveedordetalle_id AS ID";
+					$from = "creditoproveedordetalle cpd";
+					$where = "cpd.cuentacorrienteproveedor_id = {$temp_cuentacorrienteproveedor_id}";
+					$creditoproveedordetalle_id = CollectorCondition()->get('CreditoProveedorDetalle', $where, 4, $from, $select);
+					$creditoproveedordetalle_id = (is_array($creditoproveedordetalle_id) AND !empty($creditoproveedordetalle_id)) ? $creditoproveedordetalle_id[0]['ID'] : 0;
+
+					if ($creditoproveedordetalle_id != 0) {
+						$btn_display_ver_tipopago = 'inline-block';
+						$btn_tipopago_id = $ingresotipopago_id;
+						$btn_movimiento_id = $creditoproveedordetalle_id;
+					} else {
+						$btn_display_ver_tipopago = 'none';
+						$btn_tipopago_id = '#';
+						$btn_movimiento_id = '#';
+					}
+					break;
 				default:
 					$btn_display_ver_tipopago = 'none';
 					$btn_tipopago_id = '#';
@@ -249,6 +266,14 @@ class CuentaCorrienteProveedorController {
 		$tpdm->transferenciaproveedordetalle_id = $transferenciaproveedordetalle_id;
 		$tpdm->get();
 		$this->view->traer_transferenciaproveedordetalle_ajax($tpdm);
+	}
+
+	function traer_creditoproveedordetalle_ajax($arg) {
+		$creditoproveedordetalle_id = $arg;
+		$cpdm = new CreditoProveedorDetalle();
+		$cpdm->creditoproveedordetalle_id = $creditoproveedordetalle_id;
+		$cpdm->get();
+		$this->view->traer_creditoproveedordetalle_ajax($cpdm);
 	}
 
 	function buscar() {

@@ -256,20 +256,29 @@
     }
 
     function verTipoPagoDetalle(movimiento_id, tipopago_id, proveedor_id) {
-        if (tipopago_id == 1) {
-            var tipopagodetalle = $.ajax({
-                url: '{url_app}/cuentacorrienteproveedor/traer_chequeproveedordetalle_ajax/' + movimiento_id + '@' + proveedor_id,
-                dataType: 'text',
-                async: false
-            }).responseText;
-        } else {
-            var tipopagodetalle = $.ajax({
-                url: '{url_app}/cuentacorrienteproveedor/traer_transferenciaproveedordetalle_ajax/' + movimiento_id,
-                dataType: 'text',
-                async: false
-            }).responseText;
+        switch (tipopago_id) {
+            case 1:
+                var tipopagodetalle = $.ajax({
+                    url: '{url_app}/cuentacorrienteproveedor/traer_chequeproveedordetalle_ajax/' + movimiento_id + '@' + proveedor_id,
+                    dataType: 'text',
+                    async: false
+                }).responseText;
+                break;
+            case 2:
+                var tipopagodetalle = $.ajax({
+                    url: '{url_app}/cuentacorrienteproveedor/traer_transferenciaproveedordetalle_ajax/' + movimiento_id,
+                    dataType: 'text',
+                    async: false
+                }).responseText;
+                break;
+            case 4:
+                var tipopagodetalle = $.ajax({
+                    url: '{url_app}/cuentacorrienteproveedor/traer_creditoproveedordetalle_ajax/' + movimiento_id,
+                    dataType: 'text',
+                    async: false
+                }).responseText;
         }
-
+        
         document.getElementById("div_contenido").innerHTML = tipopagodetalle;
         $('#sistema_alertas').modal('show');
     }

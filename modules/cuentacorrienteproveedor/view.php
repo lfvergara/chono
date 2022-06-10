@@ -228,6 +228,15 @@ class CuentaCorrienteProveedorView extends View {
 		print $gui;
 	}
 
+	function traer_creditoproveedordetalle_ajax($obj_creditoproveedordetalle) {
+		$gui = file_get_contents("static/modules/cuentacorrienteproveedor/traer_creditoproveedordetalle_ajax.html");
+		$estado_denominacion = 'ABONADO';
+		$obj_creditoproveedordetalle->estado_denominacion = $estado_denominacion;
+		$obj_creditoproveedordetalle = $this->set_dict($obj_creditoproveedordetalle);
+		$gui = $this->render($obj_creditoproveedordetalle, $gui);
+		print $gui;
+	}
+
 	function migrar_cta_cte($proveedor_collection) {
 		$gui = file_get_contents("static/modules/cuentacorrienteproveedor/migrar_cta_cte.html");		
 		$gui_tbl_proveedor = file_get_contents("static/modules/cuentacorrienteproveedor/tbl_migrar_proveedor.html");
