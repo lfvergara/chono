@@ -1,15 +1,15 @@
 <?php
-require_once 'modules/proveedor/model.php';
+require_once 'modules/tipofactura/model.php';
 
 
 class CreditoProveedorDetalle extends StandardObject {
 	
-	function __construct(Proveedor $proveedor=NULL) {
+	function __construct(TipoFactura $tipofactura=NULL) {
 		$this->creditoproveedordetalle_id = 0;
 		$this->numero = '';
-		$this->importe = 0.00;
 		$this->fecha = '';
-		$this->proveedor = $proveedor;
+		$this->tipofactura = $tipofactura;
+		$this->cuentacorrienteproveedor_id = 0;
 	}
 }
 ?>

@@ -335,8 +335,8 @@ class CuentaCorrienteProveedorController {
 		$from = "cuentacorrienteproveedor ccp";
 		$where = "ccp.ingreso_id = {$ingreso_id} AND ccp.proveedor_id = {$proveedor_id}";
 		$balance = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
-
 		$deuda = abs($balance[0]['BALANCE']) - $importe;
+
 		if ($deuda > 0) {
 			$estadomovimientocuenta = 3;
 		} else {
@@ -374,26 +374,33 @@ class CuentaCorrienteProveedorController {
 		switch ($ingresotipopago_id) {
 			case 1:
 				$cpdm = new ChequeProveedorDetalle();
-				$cpdm->numero = 0;
-				$cpdm->fecha_vencimiento = null;
+				$cpdm->numero = filter_input(INPUT_POST, 'numero_cheque');
+				$cpdm->fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento');
 				$cpdm->fecha_pago = null;
+				$cpdm->banco = filter_input(INPUT_POST, 'banco');
+				$cpdm->plaza = filter_input(INPUT_POST, 'plaza');
+				$cpdm->titular = filter_input(INPUT_POST, 'titular');
+				$cpdm->documento = filter_input(INPUT_POST, 'documento');
+				$cpdm->cuenta_corriente = filter_input(INPUT_POST, 'cuenta_corriente');
 				$cpdm->estado = 1;
 				$cpdm->cuentacorrienteproveedor_id = $cuentacorrienteproveedor_id;
 				$cpdm->save();
 				break;
 			case 2:
 				$tpdm = new TransferenciaProveedorDetalle();
-				$tpdm->numero = 0;
+				$tpdm->numero = filter_input(INPUT_POST, 'numero_transferencia');
+				$tpdm->banco = filter_input(INPUT_POST, 'banco_transferencia');
+				$tpdm->plaza = filter_input(INPUT_POST, 'plaza_transferencia');
+				$tpdm->numero_cuenta = filter_input(INPUT_POST, 'numero_cuenta_transferencia');
 				$tpdm->cuentacorrienteproveedor_id = $cuentacorrienteproveedor_id;
 				$tpdm->save();
 				break;
 			case 4:
 				$cpdm = new CreditoProveedorDetalle();
-				$cpdm->numero = 0;
-				$cpdm->importe = $importe;
-				$cpdm->fecha = null;
+				$cpdm->numero = filter_input(INPUT_POST, 'numero_nc');
+				$cpdm->fecha = filter_input(INPUT_POST, 'fecha_nc');
+				$cpdm->tipofactura = filter_input(INPUT_POST, 'tipofactura_nc');
 				$cpdm->cuentacorrienteproveedor_id = $cuentacorrienteproveedor_id;
-				$cpdm->tipofactura = 1;
 				$cpdm->save();
 				break;
 		}
@@ -414,7 +421,6 @@ class CuentaCorrienteProveedorController {
 
 		$select = "ROUND(((ROUND(SUM(CASE WHEN ccp.tipomovimientocuenta = 2 THEN importe ELSE 0 END),2)) - (ROUND(SUM(CASE WHEN ccp.tipomovimientocuenta = 1 THEN importe ELSE 0 END),2))),2) AS BALANCE";
 		$from = "cuentacorrienteproveedor ccp";
-		$where = "ccp.ingreso_id = {$ingreso_id} AND ccp.proveedor_id = {$proveedor_id}";
 		$balance = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
 		$ingresotipopago_collection = Collector()->get('IngresoTipoPago');
 
@@ -427,8 +433,9 @@ class CuentaCorrienteProveedorController {
 		$cuentacorrienteproveedor_id = $arg;
 		$this->model->cuentacorrienteproveedor_id = $cuentacorrienteproveedor_id;
 		$this->model->get();
-		$proveedor_id = $this->model->proveedor_id;
+		$where = "ccp.ingreso_id = {$ingreso_id} AND ccp.proveedor_id = {$proveedor_id}";
 		$ingreso_id = $this->model->ingreso_id;
+		
 		$ingresotipopago_id = $this->model->ingresotipopago->ingresotipopago_id;
 		$this->model->delete();
 
