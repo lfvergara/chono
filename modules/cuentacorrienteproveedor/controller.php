@@ -459,9 +459,8 @@ class CuentaCorrienteProveedorController {
 		$cuentacorrienteproveedor_id = $arg;
 		$this->model->cuentacorrienteproveedor_id = $cuentacorrienteproveedor_id;
 		$this->model->get();
-		$where = "ccp.ingreso_id = {$ingreso_id} AND ccp.proveedor_id = {$proveedor_id}";
+		$proveedor_id = $this->model->proveedor_id;
 		$ingreso_id = $this->model->ingreso_id;
-		
 		$ingresotipopago_id = $this->model->ingresotipopago->ingresotipopago_id;
 		$this->model->delete();
 
@@ -511,7 +510,7 @@ class CuentaCorrienteProveedorController {
 
 		$select = "ccp.importe AS IMPORTE, ccp.ingreso AS INGRESO, ccp.cuentacorrienteproveedor_id AS ID";
 		$from = "cuentacorrienteproveedor ccp";
-		$where = "ccp.ingreso_id = {$ingreso_id} AND ccp.proveedor_id = {$proveedor_id} ORDER BY ccp.cuentacorrienteproveedor_id DESC";
+		$where = "ccp.ingreso_id = {$ingreso_id} ORDER BY ccp.cuentacorrienteproveedor_id DESC";
 		$cuentacorrienteproveedor_collection = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
 
 		if (is_array($cuentacorrienteproveedor_collection) AND !empty($cuentacorrienteproveedor_collection)) {
