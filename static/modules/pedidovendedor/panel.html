@@ -145,7 +145,7 @@
         var flag = array_ids.indexOf(vendedor_id);
         var descripcion = document.getElementById('tbl_den_' + vendedor_id).innerHTML;
         if(parseInt(flag) === -1) {
-            if (array_ids.length <= 1) {
+            //if (array_ids.length <= 1) {
                 var bodyTblVendedor = document.getElementById('bodyTblVendedor');
 
                 /* FILA */
@@ -182,9 +182,11 @@
                 inputVendedorId.setAttribute("value", vendedor_id);
                 div_array_reporte_pedido_vendedor_fecha.appendChild(inputVendedorId);
                 array_ids.push(vendedor_id);
+            /*
             } else {
                 return false;
             }
+            */
         } else {
             return false;
         }
