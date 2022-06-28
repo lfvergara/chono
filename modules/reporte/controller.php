@@ -1052,7 +1052,8 @@ class ReporteController {
 
 				if ($this->producto->oculto == 0) {
 					$costo_iva = $this->producto->costo + (($this->producto->costo * $this->producto->iva) / 100);
-					$valor_stock_producto = round(($costo_iva * $this->stock->cantidad_actual),2);
+					$costo_flete = $costo_iva + (($costo_iva * $this->producto->flete) / 100);
+					$valor_stock_producto = round(($costo_flete * $this->stock->cantidad_actual),2);
 					$stock_valorizado = $stock_valorizado + $valor_stock_producto;
 
 					$this->stock->producto = $this->producto;
